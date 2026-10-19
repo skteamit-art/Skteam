@@ -15,6 +15,7 @@
             top: 0; left: 0; width: 100%; height: 100%;
             z-index: 0;
             pointer-events: none;
+            opacity: 0.5;
         }
 
         /* Splash Screen Container */
@@ -35,24 +36,33 @@
             opacity: 0;
         }
 
-        /* Center Fast Particles */
+        /* Center Fast Particles Canvas */
         #center-canvas {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
             z-index: 1;
         }
 
-        /* The Actual Logo Image */
+        /* The Actual Logo Image (Mobile Default) */
         #main-splash-logo {
             position: absolute;
-            width: 280px;
-            height: 280px;
+            width: 150px;
+            height: 150px;
             object-fit: contain;
             z-index: 2;
             opacity: 0;
             transform: scale(0.8);
-            filter: drop-shadow(0 0 30px rgba(59,130,246,0.8));
+            filter: drop-shadow(0 0 25px rgba(59,130,246,0.9));
             transition: opacity 2s ease, transform 2s ease;
+        }
+        
+        /* The Actual Logo Image (Desktop) */
+        @media (min-width: 768px) {
+            #main-splash-logo {
+                width: 300px;
+                height: 300px;
+                filter: drop-shadow(0 0 40px rgba(59,130,246,0.9));
+            }
         }
         
         #main-splash-logo.show {
@@ -84,7 +94,7 @@
 
         .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(10, 12, 16, 0.9); backdrop-filter: blur(5px); z-index: 1000; display: flex; justify-content: center; align-items: center; opacity: 0; visibility: hidden; transition: all 0.3s ease; }
         .modal.active { opacity: 1; visibility: visible; }
-        .modal-content { background: #1e2329; border: 1px solid #3b82f6; box-shadow: 0 0 30px rgba(59,130,246,0.3); width: 90%; max-width: 600px; border-radius: 1rem; padding: 2rem; transform: scale(0.9); transition: transform 0.3s ease; max-height: 90vh; overflow-y: auto; }
+        .modal-content { background: #1e2329; border: 1px solid #3b82f6; box-shadow: 0 0 30px rgba(59,130,246,0.3); width: 92%; max-width: 600px; border-radius: 1rem; padding: 2rem; transform: scale(0.9); transition: transform 0.3s ease; max-height: 90vh; overflow-y: auto; }
         .modal.active .modal-content { transform: scale(1); }
     </style>
 </head>
@@ -95,52 +105,75 @@
 
     <!-- Splash Screen -->
     <div id="splash-screen">
-        <!-- Center Fast Particles -->
         <canvas id="center-canvas"></canvas>
-        <!-- The Real Logo -->
         <img id="main-splash-logo" src="skteam_ring_transparent.png" alt="SK Team Logo">
     </div>
 
     <!-- Main Website Content -->
     <div id="main-content" class="flex-grow flex flex-col min-h-screen">
         
+        <!-- Responsive Header -->
         <header class="bg-[#0f1218]/90 backdrop-blur-md border-b border-gray-800 sticky top-0 z-40">
             <div class="max-w-7xl mx-auto px-4 h-20 flex items-center justify-between">
+                <!-- Logo -->
                 <a href="#" onclick="showHome()" class="flex items-center gap-3">
-                    <img src="skteam_ring_transparent.png" alt="SK Team Logo" class="h-12 w-auto object-contain" />
-                    <span class="text-2xl font-bold tracking-wider">Sk<span class="text-blue-500">.team</span></span>
+                    <img src="skteam_ring_transparent.png" alt="SK Team Logo" class="h-10 md:h-12 w-auto object-contain" />
+                    <span class="text-xl md:text-2xl font-bold tracking-wider">Sk<span class="text-blue-500">.team</span></span>
                 </a>
+                
+                <!-- Desktop Navigation -->
                 <nav class="hidden md:flex items-center gap-8 text-gray-300 font-medium">
                     <a href="#" onclick="showHome()" class="hover:text-blue-400 transition-colors">خانه</a>
                     <a href="#bots" onclick="showHome()" class="hover:text-blue-400 transition-colors">ربات‌ها</a>
                     <a href="#services" onclick="showHome()" class="hover:text-blue-400 transition-colors">خدمات ما</a>
                     <a href="#about" onclick="showHome()" class="hover:text-blue-400 transition-colors">درباره ما</a>
                 </nav>
-                <a href="#contact" onclick="showHome()" class="bg-blue-600 hover:bg-blue-500 text-white px-5 py-2.5 rounded-xl font-medium transition-all shadow-[0_0_15px_rgba(37,99,235,0.4)]">ارتباط با ما</a>
+
+                <!-- Mobile Menu Button -->
+                <button onclick="toggleMobileMenu()" class="md:hidden text-gray-300 hover:text-white focus:outline-none">
+                    <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                    </svg>
+                </button>
+
+                <!-- Desktop Contact Button -->
+                <a href="#contact" onclick="showHome()" class="hidden md:block bg-blue-600 hover:bg-blue-500 text-white px-5 py-2.5 rounded-xl font-medium transition-all shadow-[0_0_15px_rgba(37,99,235,0.4)]">ارتباط با ما</a>
+            </div>
+
+            <!-- Mobile Dropdown Menu -->
+            <div id="mobile-menu" class="hidden md:hidden bg-[#0f1218] border-b border-gray-800 absolute w-full shadow-2xl">
+                <div class="px-4 py-4 flex flex-col gap-4 text-center text-gray-300 font-medium">
+                    <a href="#" onclick="showHome(); toggleMobileMenu()" class="hover:text-blue-400 py-2 border-b border-gray-800">خانه</a>
+                    <a href="#bots" onclick="showHome(); toggleMobileMenu()" class="hover:text-blue-400 py-2 border-b border-gray-800">ربات‌ها</a>
+                    <a href="#services" onclick="showHome(); toggleMobileMenu()" class="hover:text-blue-400 py-2 border-b border-gray-800">خدمات ما</a>
+                    <a href="#about" onclick="showHome(); toggleMobileMenu()" class="hover:text-blue-400 py-2 border-b border-gray-800">درباره ما</a>
+                    <a href="#contact" onclick="showHome(); toggleMobileMenu()" class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg mt-2">ارتباط با ما</a>
+                </div>
             </div>
         </header>
 
         <main class="flex-grow">
-            <!-- ================= HOME VIEW ================= -->
             <div id="home-view" class="hide fade-in">
-                <section class="max-w-7xl mx-auto px-4 py-20 flex flex-col md:flex-row items-center justify-between gap-12">
+                <!-- Hero Section -->
+                <section class="max-w-7xl mx-auto px-4 py-16 md:py-24 flex flex-col md:flex-row items-center justify-between gap-10 md:gap-12">
                     <div class="flex-1 text-center md:text-right">
-                        <h1 class="text-5xl md:text-6xl font-extrabold leading-tight mb-6">
+                        <h1 class="text-4xl md:text-6xl font-extrabold leading-tight mb-6">
                             با <span class="text-blue-500 neon-text">SK Team</span> <br />
                             به آینده سفر کنید
                         </h1>
-                        <p class="text-gray-400 text-lg md:text-xl mb-8 leading-relaxed max-w-2xl mx-auto md:mx-0">
+                        <p class="text-gray-400 text-base md:text-xl mb-8 leading-relaxed max-w-2xl mx-auto md:mx-0">
                             تیم برنامه‌نویسی SK Team با طراحی ربات‌های هوشمند و سایت‌های اختصاصی، به رشد و رونق کسب و کار شما سرعت می‌بخشد.
                         </p>
                         <div class="flex items-center justify-center md:justify-start gap-4">
-                            <a href="#bots" class="bg-blue-600 hover:bg-blue-500 text-white px-8 py-3 rounded-xl font-bold text-lg transition-all shadow-[0_0_20px_rgba(37,99,235,0.4)]">مشاهده ربات‌ها</a>
+                            <a href="#bots" class="bg-blue-600 hover:bg-blue-500 text-white px-6 md:px-8 py-3 rounded-xl font-bold text-base md:text-lg transition-all shadow-[0_0_20px_rgba(37,99,235,0.4)]">مشاهده ربات‌ها</a>
                         </div>
                     </div>
-                    <div class="flex-1 flex justify-center">
-                        <img src="logo_white2_transparent.png" alt="SK Team Robot" class="w-72 h-72 md:w-96 md:h-96 object-contain drop-shadow-[0_0_30px_rgba(59,130,246,0.3)] floating" />
+                    <div class="flex-1 flex justify-center w-full">
+                        <img src="logo_white2_transparent.png" alt="SK Team Robot" class="w-64 h-64 md:w-96 md:h-96 object-contain drop-shadow-[0_0_30px_rgba(59,130,246,0.3)] floating" />
                     </div>
                 </section>
 
+                <!-- Trust Section -->
                 <section class="max-w-7xl mx-auto px-4 py-10 border-t border-gray-800">
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
                         <div class="bg-[#15191e] p-6 rounded-2xl border border-gray-800">
@@ -161,95 +194,100 @@
                     </div>
                 </section>
 
+                <!-- Bots Section -->
                 <section id="bots" class="max-w-7xl mx-auto px-4 py-16 border-t border-gray-800">
-                    <div class="text-center mb-12">
-                        <h2 class="text-4xl font-bold mb-4">ربات‌های هوشمند SK Team</h2>
-                        <p class="text-gray-400">روی هر ربات کلیک کنید تا توضیحات کامل آن را ببینید.</p>
+                    <div class="text-center mb-10 md:mb-12">
+                        <h2 class="text-3xl md:text-4xl font-bold mb-4">ربات‌های هوشمند SK Team</h2>
+                        <p class="text-gray-400 text-sm md:text-base">روی هر ربات کلیک کنید تا توضیحات کامل آن را ببینید.</p>
                     </div>
-                    <div id="bots-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
+                    <div id="bots-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8"></div>
                 </section>
 
+                <!-- Services Section -->
                 <section id="services" class="max-w-7xl mx-auto px-4 py-16 border-t border-gray-800">
-                    <div class="text-center mb-12">
-                        <h2 class="text-4xl font-bold mb-4">خدمات تخصصی ما</h2>
-                        <p class="text-gray-400">برای مشاهده جزئیات هر خدمت، روی آن کلیک کنید.</p>
+                    <div class="text-center mb-10 md:mb-12">
+                        <h2 class="text-3xl md:text-4xl font-bold mb-4">خدمات تخصصی ما</h2>
+                        <p class="text-gray-400 text-sm md:text-base">برای مشاهده جزئیات هر خدمت، روی آن کلیک کنید.</p>
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div onclick="openServiceModal('messenger')" class="cursor-pointer bg-[#1e2329] border border-gray-700 rounded-2xl p-6 neon-box">
+                        <div onclick="openServiceModal('messenger')" class="cursor-pointer bg-[#1e2329] border border-gray-700 rounded-2xl p-6 neon-box text-center md:text-right">
                             <h3 class="text-xl font-bold mb-3 text-blue-400">ربات‌های پیام‌رسان</h3>
                             <p class="text-gray-400 text-sm leading-relaxed">طراحی و ساخت ربات برای تلگرام، ایتا، بله و روبیکا بر اساس نیاز شما.</p>
                         </div>
-                        <div onclick="openServiceModal('web')" class="cursor-pointer bg-[#1e2329] border border-gray-700 rounded-2xl p-6 neon-box">
+                        <div onclick="openServiceModal('web')" class="cursor-pointer bg-[#1e2329] border border-gray-700 rounded-2xl p-6 neon-box text-center md:text-right">
                             <h3 class="text-xl font-bold mb-3 text-blue-400">طراحی وب‌سایت</h3>
                             <p class="text-gray-400 text-sm leading-relaxed">طراحی انواع سایت شرکتی، فروشگاهی و شخصی با بالاترین کیفیت.</p>
                         </div>
-                        <div onclick="openServiceModal('social')" class="cursor-pointer bg-[#1e2329] border border-gray-700 rounded-2xl p-6 neon-box">
+                        <div onclick="openServiceModal('social')" class="cursor-pointer bg-[#1e2329] border border-gray-700 rounded-2xl p-6 neon-box text-center md:text-right">
                             <h3 class="text-xl font-bold mb-3 text-blue-400">مدیریت شبکه‌های مجازی</h3>
                             <p class="text-gray-400 text-sm leading-relaxed">مدیریت و رونق کسب و کار شما با ربات‌های منشی و پاسخگوی خودکار.</p>
                         </div>
                     </div>
                 </section>
 
+                <!-- About Us -->
                 <section id="about" class="max-w-4xl mx-auto px-4 py-16 border-t border-gray-800 text-center">
-                    <h2 class="text-4xl font-bold mb-6">درباره <span class="text-blue-500">SK Team</span></h2>
-                    <p class="text-gray-300 text-lg leading-relaxed">
+                    <h2 class="text-3xl md:text-4xl font-bold mb-6">درباره <span class="text-blue-500">SK Team</span></h2>
+                    <p class="text-gray-300 text-base md:text-lg leading-relaxed text-justify md:text-center">
                         تیم SK Team متشکل از برنامه‌نویسان متخصص و خلاق است که با هدف رونق کسب و کارها در فضای مجازی شکل گرفته است. ما با طراحی ربات‌های هوشمند و اتوماسیون‌های پیشرفته، ابزارهای لازم برای رشد و مدیریت آسان‌تر شبکه‌های اجتماعی شما را فراهم می‌کنیم. تخصص ما ساخت ربات‌های سفارشی و اختصاصی برای شماست.
                     </p>
                 </section>
             </div>
 
-            <!-- ================= BOT DETAIL VIEW ================= -->
+            <!-- Bot Detail View -->
             <div id="bot-detail-view" class="hide fade-in max-w-5xl mx-auto px-4 py-12">
-                <button onclick="showHome()" class="mb-8 flex items-center gap-2 text-blue-400 hover:text-blue-300 font-bold bg-[#1e2329] px-4 py-2 rounded-lg border border-gray-700 transition-colors">
+                <button onclick="showHome()" class="mb-8 flex items-center gap-2 text-blue-400 hover:text-blue-300 font-bold bg-[#1e2329] px-4 py-2 rounded-lg border border-gray-700 transition-colors text-sm md:text-base">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" /></svg>
                     بازگشت به صفحه اصلی
                 </button>
                 
-                <div class="bg-[#1e2329] border border-gray-700 rounded-3xl p-8 md:p-12 shadow-2xl relative overflow-hidden neon-box">
-                    <div class="flex flex-col md:flex-row items-center md:items-start gap-8">
-                        <div class="w-48 h-48 flex-shrink-0 bg-[#0a0c10] rounded-2xl p-4 flex items-center justify-center border border-gray-800">
+                <div class="bg-[#1e2329] border border-gray-700 rounded-3xl p-6 md:p-12 shadow-2xl relative overflow-hidden neon-box">
+                    <div class="flex flex-col md:flex-row items-center md:items-start gap-6 md:gap-8">
+                        <div class="w-40 h-40 md:w-48 md:h-48 flex-shrink-0 bg-[#0a0c10] rounded-2xl p-4 flex items-center justify-center border border-gray-800">
                             <img id="detail-image" src="" alt="" class="w-full h-full object-contain floating" />
                         </div>
                         <div class="flex-1 text-center md:text-right">
-                            <h1 id="detail-title" class="text-4xl font-extrabold mb-4 text-blue-400 neon-text"></h1>
-                            <p id="detail-desc" class="text-gray-400 text-lg mb-6 leading-relaxed"></p>
+                            <h1 id="detail-title" class="text-3xl md:text-4xl font-extrabold mb-4 text-blue-400 neon-text"></h1>
+                            <p id="detail-desc" class="text-gray-400 text-base md:text-lg mb-6 leading-relaxed"></p>
                             <div class="flex flex-wrap justify-center md:justify-start gap-4">
-                                <a href="https://t.me/Siavashska" target="_blank" class="bg-blue-600 hover:bg-blue-500 text-white px-8 py-3 rounded-xl font-bold transition-all shadow-[0_0_20px_rgba(37,99,235,0.4)]">مشاهده قیمت و خرید در تلگرام</a>
+                                <a href="https://t.me/Siavashska" target="_blank" class="bg-blue-600 hover:bg-blue-500 text-white px-6 md:px-8 py-3 rounded-xl font-bold transition-all shadow-[0_0_20px_rgba(37,99,235,0.4)] text-sm md:text-base">مشاهده قیمت و خرید در تلگرام</a>
                             </div>
                         </div>
                     </div>
 
-                    <div class="mt-12 pt-8 border-t border-gray-700">
-                        <h3 class="text-2xl font-bold mb-6 text-white">امکانات و قابلیت‌ها</h3>
-                        <div id="detail-features" class="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-300 leading-relaxed text-sm"></div>
+                    <div class="mt-10 md:mt-12 pt-8 border-t border-gray-700">
+                        <h3 class="text-2xl font-bold mb-6 text-white text-center md:text-right">امکانات و قابلیت‌ها</h3>
+                        <div id="detail-features" class="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-300 leading-relaxed text-sm md:text-base"></div>
                     </div>
                 </div>
             </div>
         </main>
 
-        <footer id="contact" class="bg-[#0f1218] border-t border-gray-800 py-12 mt-10 relative z-10">
-            <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-8">
-                <div class="text-center md:text-right flex flex-col items-center md:items-start">
+        <!-- Responsive Footer -->
+        <footer id="contact" class="bg-[#0f1218] border-t border-gray-800 py-10 md:py-12 mt-10 relative z-10">
+            <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-10 md:gap-8">
+                
+                <div class="text-center md:text-right flex flex-col items-center md:items-start w-full md:w-auto">
                     <div class="flex items-center gap-3 mb-4">
                         <img src="skteam_ring_transparent.png" alt="SK Team Logo" class="h-10 w-auto object-contain" />
                         <span class="text-xl font-bold tracking-wider">Sk<span class="text-blue-500">.team</span></span>
                     </div>
-                    <p class="text-gray-500 text-sm mb-4">تمامی حقوق مادی و معنوی این سایت متعلق به SK Team می‌باشد. &copy; 2024</p>
+                    <p class="text-gray-500 text-sm">تمامی حقوق مادی و معنوی این سایت متعلق به SK Team می‌باشد. &copy; 2024</p>
                 </div>
                 
                 <div class="text-center md:text-left bg-[#1e2329] border border-gray-700 p-6 rounded-2xl w-full md:w-auto">
                     <h3 class="text-lg font-bold text-white mb-4">ارتباط با ما</h3>
-                    <div class="flex flex-wrap justify-center md:justify-start gap-3">
-                        <a href="https://t.me/Siavashska" target="_blank" class="inline-flex justify-center items-center gap-2 bg-[#2AABEE] hover:bg-[#229ED9] text-white px-4 py-2 rounded-lg text-sm font-medium transition-all">
+                    <div class="flex flex-col sm:flex-row flex-wrap justify-center md:justify-start gap-3">
+                        <a href="https://t.me/Siavashska" target="_blank" class="inline-flex justify-center items-center gap-2 bg-[#2AABEE] hover:bg-[#229ED9] text-white px-4 py-2 rounded-lg text-sm font-medium transition-all w-full sm:w-auto">
                             پشتیبانی تلگرام
                         </a>
-                        <a href="https://t.me/Skteamchnl" target="_blank" class="inline-flex justify-center items-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all">
+                        <a href="https://t.me/Skteamchnl" target="_blank" class="inline-flex justify-center items-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all w-full sm:w-auto">
                             کانال تلگرام
                         </a>
-                        <a href="mailto:sk.team.it@gmail.com" class="inline-flex justify-center items-center gap-2 bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all">
+                        <a href="mailto:sk.team.it@gmail.com" class="inline-flex justify-center items-center gap-2 bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all w-full sm:w-auto">
                             ایمیل تیم
                         </a>
-                        <button onclick="openQRModal()" class="inline-flex justify-center items-center gap-2 bg-purple-600 hover:bg-purple-500 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all">
+                        <button onclick="openQRModal()" class="inline-flex justify-center items-center gap-2 bg-purple-600 hover:bg-purple-500 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all w-full sm:w-auto">
                             کارت ویزیت
                         </button>
                     </div>
@@ -258,7 +296,7 @@
         </footer>
     </div>
 
-    <!-- ================= MODALS ================= -->
+    <!-- Modals (Responsive by default) -->
     <div id="service-modal" class="modal">
         <div class="modal-content text-right dir-rtl">
             <div class="flex justify-between items-center mb-6 border-b border-gray-700 pb-4">
@@ -278,20 +316,25 @@
                 <h3 class="text-2xl font-bold text-blue-400">کارت ویزیت دیجیتال</h3>
                 <button onclick="closeQRModal()" class="text-gray-400 hover:text-white text-2xl">&times;</button>
             </div>
-            <p class="text-gray-300 mb-6">برای دریافت اطلاعات تماس و کارت ویزیت ما، این بارکد را با دوربین گوشی خود اسکن کنید.</p>
+            <p class="text-gray-300 mb-6 text-sm">برای دریافت اطلاعات تماس و کارت ویزیت ما، این بارکد را با دوربین گوشی خود اسکن کنید.</p>
             <div class="bg-white p-4 rounded-xl inline-block mx-auto">
-                <img src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=https://skteam.ir" alt="QR Code" class="w-64 h-64" />
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://skteam.ir" alt="QR Code" class="w-48 h-48 md:w-64 md:h-64" />
             </div>
         </div>
     </div>
 
     <script>
-        // ================= BACKGROUND MATRIX (SLOW) =================
+        // Mobile Menu Logic
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        }
+
+        // Background Matrix
         const bgCanvas = document.getElementById('bg-canvas');
         const bgCtx = bgCanvas.getContext('2d');
         bgCanvas.width = window.innerWidth;
         bgCanvas.height = window.innerHeight;
-
         const bgLetters = '01';
         const bgFontSize = 16;
         const bgColumns = bgCanvas.width / bgFontSize;
@@ -299,19 +342,15 @@
         for (let x = 0; x < bgColumns; x++) {
             bgDrops[x] = { y: Math.random() * -100, speed: Math.random() * 0.2 + 0.1 };
         }
-
         function drawBgMatrix() {
             bgCtx.fillStyle = 'rgba(10, 12, 16, 0.1)';
             bgCtx.fillRect(0, 0, bgCanvas.width, bgCanvas.height);
-            bgCtx.fillStyle = 'rgba(59, 130, 246, 0.4)'; // Fainter blue for background
+            bgCtx.fillStyle = 'rgba(59, 130, 246, 0.3)';
             bgCtx.font = bgFontSize + 'px monospace';
-            
             for (let i = 0; i < bgDrops.length; i++) {
                 const text = bgLetters.charAt(Math.floor(Math.random() * bgLetters.length));
                 bgCtx.fillText(text, i * bgFontSize, bgDrops[i].y * bgFontSize);
-                
                 bgDrops[i].y += bgDrops[i].speed;
-                
                 if (bgDrops[i].y * bgFontSize > bgCanvas.height && Math.random() > 0.98) {
                     bgDrops[i].y = 0;
                     bgDrops[i].speed = Math.random() * 0.2 + 0.1; 
@@ -320,53 +359,51 @@
         }
         setInterval(drawBgMatrix, 50);
 
-        // ================= CENTER FAST PARTICLES (VORTEX) =================
+        // Center Particles
         const centerCanvas = document.getElementById('center-canvas');
         const centerCtx = centerCanvas.getContext('2d');
         centerCanvas.width = window.innerWidth;
         centerCanvas.height = window.innerHeight;
-
+        const isMobile = window.innerWidth < 768;
         let centerParticles = [];
-        let phase = 'rain'; // rain, vortex, disperse
+        let phase = 'rain'; 
         const centerX = centerCanvas.width / 2;
         const centerY = centerCanvas.height / 2;
-        const logoRadius = Math.min(centerCanvas.width, centerCanvas.height) * 0.25; // Radius of the logo area
+        const targetRadius = isMobile ? 85 : 170; 
+        const particleCount = isMobile ? 200 : 400; 
 
-        // Initialize center particles
-        for (let i = 0; i < 300; i++) {
+        for (let i = 0; i < particleCount; i++) {
             centerParticles.push({
-                x: centerX + (Math.random() - 0.5) * 400,
+                x: centerX + (Math.random() - 0.5) * (targetRadius * 2.5), 
                 y: Math.random() * -centerCanvas.height,
-                speed: Math.random() * 8 + 5, // Fast falling
-                angle: Math.random() * Math.PI * 2,
-                radius: logoRadius + (Math.random() - 0.5) * 50,
+                speed: Math.random() * 10 + 10,
+                targetAngle: Math.random() * Math.PI * 2, 
                 char: bgLetters.charAt(Math.floor(Math.random() * bgLetters.length))
             });
         }
-
         function animateCenter() {
             centerCtx.clearRect(0, 0, centerCanvas.width, centerCanvas.height);
             centerCtx.shadowBlur = 10;
             centerCtx.shadowColor = '#3b82f6';
-            centerCtx.fillStyle = '#60a5fa';
-            centerCtx.font = '14px monospace';
-
+            centerCtx.fillStyle = '#60a5fa'; 
+            centerCtx.font = (isMobile ? '14px' : '18px') + ' monospace';
             centerParticles.forEach(p => {
                 if (phase === 'rain') {
                     p.y += p.speed;
                     if (p.y > centerCanvas.height) p.y = -20;
-                } else if (phase === 'vortex') {
-                    // Suck them into the logo center to form a swirling ring
-                    p.angle += 0.05; // Rotation speed
-                    p.radius += (logoRadius - p.radius) * 0.05; // Pull towards target radius
-                    
-                    // Move towards center Y and X
-                    p.x += (centerX + Math.cos(p.angle) * p.radius - p.x) * 0.05;
-                    p.y += (centerY + Math.sin(p.angle) * p.radius - p.y) * 0.05;
+                } else if (phase === 'form_ring') {
+                    const targetX = centerX + Math.cos(p.targetAngle) * targetRadius;
+                    const targetY = centerY + Math.sin(p.targetAngle) * targetRadius;
+                    p.x += (targetX - p.x) * 0.08;
+                    p.y += (targetY - p.y) * 0.08;
+                    p.targetAngle += 0.01;
+                } else if (phase === 'hold') {
+                    p.targetAngle += 0.02;
+                    p.x = centerX + Math.cos(p.targetAngle) * targetRadius;
+                    p.y = centerY + Math.sin(p.targetAngle) * targetRadius;
                 } else if (phase === 'disperse') {
-                    // Explode outwards slightly
-                    p.x += (p.x - centerX) * 0.02;
-                    p.y += (p.y - centerY) * 0.02;
+                    p.x += Math.cos(p.targetAngle) * 5;
+                    p.y += Math.sin(p.targetAngle) * 5 + 2; 
                 }
                 centerCtx.fillText(p.char, p.x, p.y);
             });
@@ -374,68 +411,33 @@
         }
         animateCenter();
 
-        // ================= 15-SECOND TIMELINE =================
+        // Timeline
         window.addEventListener('DOMContentLoaded', () => {
             const splashScreen = document.getElementById('splash-screen');
             const mainLogo = document.getElementById('main-splash-logo');
             const mainContent = document.getElementById('main-content');
             const homeView = document.getElementById('home-view');
 
-            // t=0s to 4s: Background rain + center fast rain.
-            
-            // t=4s: Start Vortex (Particles swirl to form the logo shape)
+            setTimeout(() => { phase = 'form_ring'; }, 4000);
             setTimeout(() => {
-                phase = 'vortex';
-            }, 4000);
-
-            // t=9s: Bring in the high-res Logo Image over the vortex
-            setTimeout(() => {
-                mainLogo.classList.add('show');
-            }, 9000);
-
-            // t=12s: Prepare to leave (disperse particles)
+                phase = 'hold';
+                mainLogo.classList.add('show'); 
+            }, 8000);
             setTimeout(() => {
                 phase = 'disperse';
-            }, 12000);
-
-            // t=13s: Shrink logo to corner and show main site
-            setTimeout(() => {
                 splashScreen.classList.add('shrink-to-corner');
                 mainContent.classList.add('show');
                 homeView.classList.remove('hide');
-                
-                // Remove splash screen completely after transition
-                setTimeout(() => {
-                    splashScreen.style.display = 'none';
-                }, 2000);
-
+                setTimeout(() => { splashScreen.style.display = 'none'; }, 2000);
             }, 13000); 
         });
 
-        // Resize handler
-        window.addEventListener('resize', () => {
-            bgCanvas.width = window.innerWidth;
-            bgCanvas.height = window.innerHeight;
-            centerCanvas.width = window.innerWidth;
-            centerCanvas.height = window.innerHeight;
-        });
-
-        // ================= SERVICE MODALS =================
+        // Services & Modals
         const serviceData = {
-            'messenger': {
-                title: 'ربات‌های پیام‌رسان',
-                body: `<p>ما ربات‌های اختصاصی برای پلتفرم‌های مختلف از جمله <strong>تلگرام، ایتا، بله و روبیکا</strong> طراحی می‌کنیم.</p><ul class="list-disc list-inside space-y-2 mt-3 text-gray-400"><li>ربات‌های فروشگاهی و فروش خودکار</li><li>ربات‌های منشی و پاسخگوی خودکار</li><li>ربات‌های مدیریت گروه و کانال</li><li>ربات‌های سرگرمی و بازی</li></ul>`
-            },
-            'web': {
-                title: 'طراحی وب‌سایت',
-                body: `<p>تیم ما انواع مختلفی از وب‌سایت‌ها را با بالاترین کیفیت و تکنولوژی‌های روز دنیا طراحی می‌کند:</p><ul class="list-disc list-inside space-y-2 mt-3 text-gray-400"><li><strong>انواع سایت‌ها:</strong> شرکتی، فروشگاهی، شخصی، پرتفولیو و وبلاگ.</li><li><strong>سایت با سرور (Server):</strong> مناسب برای سایت‌هایی که نیاز به دیتابیس، پنل مدیریت و پردازش‌های پیچیده دارند.</li><li><strong>سایت بدون سرور (Serverless):</strong> مناسب برای سایت‌های سریع، امن و استاتیک. هزینه نگهداری بسیار پایین و سرعت لود فوق‌العاده.</li></ul>`
-            },
-            'social': {
-                title: 'مدیریت شبکه‌های مجازی',
-                body: `<p>ما با استفاده از اتوماسیون و ربات‌های هوشمند، به رشد و رونق کسب و کار شما در شبکه‌های اجتماعی کمک می‌کنیم.</p><ul class="list-disc list-inside space-y-2 mt-3 text-gray-400"><li>مدیریت و رونق گروه‌ها و کانال‌ها</li><li>راه‌اندازی ربات‌های منشی هوشمند برای پاسخگویی ۲۴ ساعته</li><li>مدیریت کمپین‌های تبلیغاتی و جذب ممبر</li><li>افزایش تعامل و فعالیت در صفحات مجازی شما</li></ul>`
-            }
+            'messenger': { title: 'ربات‌های پیام‌رسان', body: `<p>ما ربات‌های اختصاصی برای پلتفرم‌های مختلف از جمله <strong>تلگرام، ایتا، بله و روبیکا</strong> طراحی می‌کنیم.</p><ul class="list-disc list-inside space-y-2 mt-3 text-gray-400"><li>ربات‌های فروشگاهی و فروش خودکار</li><li>ربات‌های منشی و پاسخگوی خودکار</li><li>ربات‌های مدیریت گروه و کانال</li><li>ربات‌های سرگرمی و بازی</li></ul>` },
+            'web': { title: 'طراحی وب‌سایت', body: `<p>تیم ما انواع مختلفی از وب‌سایت‌ها را با بالاترین کیفیت و تکنولوژی‌های روز دنیا طراحی می‌کند:</p><ul class="list-disc list-inside space-y-2 mt-3 text-gray-400"><li><strong>انواع سایت‌ها:</strong> شرکتی، فروشگاهی، شخصی، پرتفولیو و وبلاگ.</li><li><strong>سایت با سرور (Server):</strong> مناسب برای سایت‌هایی که نیاز به دیتابیس، پنل مدیریت و پردازش‌های پیچیده دارند.</li><li><strong>سایت بدون سرور (Serverless):</strong> مناسب برای سایت‌های سریع، امن و استاتیک. هزینه نگهداری بسیار پایین و سرعت لود فوق‌العاده.</li></ul>` },
+            'social': { title: 'مدیریت شبکه‌های مجازی', body: `<p>ما با استفاده از اتوماسیون و ربات‌های هوشمند، به رشد و رونق کسب و کار شما در شبکه‌های اجتماعی کمک می‌کنیم.</p><ul class="list-disc list-inside space-y-2 mt-3 text-gray-400"><li>مدیریت و رونق گروه‌ها و کانال‌ها</li><li>راه‌اندازی ربات‌های منشی هوشمند برای پاسخگویی ۲۴ ساعته</li><li>مدیریت کمپین‌های تبلیغاتی و جذب ممبر</li><li>افزایش تعامل و فعالیت در صفحات مجازی شما</li></ul>` }
         };
-
         function openServiceModal(serviceId) {
             const data = serviceData[serviceId];
             if(!data) return;
@@ -443,66 +445,37 @@
             document.getElementById('modal-body').innerHTML = data.body;
             document.getElementById('service-modal').classList.add('active');
         }
+        function closeServiceModal() { document.getElementById('service-modal').classList.remove('active'); }
+        function openQRModal() { document.getElementById('qr-modal').classList.add('active'); }
+        function closeQRModal() { document.getElementById('qr-modal').classList.remove('active'); }
 
-        function closeServiceModal() {
-            document.getElementById('service-modal').classList.remove('active');
-        }
-
-        function openQRModal() {
-            document.getElementById('qr-modal').classList.add('active');
-        }
-
-        function closeQRModal() {
-            document.getElementById('qr-modal').classList.remove('active');
-        }
-
-        // ================= BOTS DATA & RENDER =================
+        // Bots Data
         const botsData = {
-            'music-player': {
-                title: 'ربات موزیک پلیر', image: 'robot_headphones_transparent.png', shortDesc: 'پخش و دانلود آنلاین موزیک با کیفیت ۳۲۰، همراه با ۴۰ اسکین اختصاصی و اکولایزرهای حرفه‌ای.',
-                features: ['🎧 پخش و دانلود: پخش آنلاین و قابلیت دانلود فایل‌ها با کیفیت عالی ۳۲۰ کیلوبیت بر ثانیه.', '🌐 پشتیبانی از سایت‌های معروف: دریافت و پخش مستقیم از یوتیوب، ساندکلود و چندین پلتفرم دیگر.', '🎨 شخصی‌سازی کامل (۴۰+ اسکین): بیش از ۴۰ قالب ظاهری (اسکین) که مالک گروه می‌تواند تغییر دهد.', '🎛 اکولایزر حرفه‌ای (۲۰+ حالت): نزدیک به ۲۰ حالت اکولایزر و قابلیت تنظیم سرعت پخش موزیک.', '📂 آرشیو هوشمند: آرشیو کامل و منظم تمامی فایل‌های پخش شده برای دسترسی آسان.']
-            },
-            'video-player': {
-                title: 'ربات ویدیو پلیر', image: 'logo_video_player.png', shortDesc: 'پخش آنلاین شبکه‌های تلویزیونی، ماهواره‌ای و فایل‌های تصویری به صورت مستقیم در گروه.',
-                features: ['📺 پخش زنده تلویزیون: پخش آنلاین شبکه‌های ماهواره‌ای و داخلی.', '🎬 پخش فایل‌های ویدیویی: پخش ویدیوهای ارسالی در گروه با بالاترین کیفیت.', '🚀 سرعت بالا: استریم بدون لگ و روان برای گروه‌های پرجمعیت.']
-            },
-            'group-manager': {
-                title: 'ربات مدیریت گروه (Ultimate)', image: 'logo_white2_transparent.png', shortDesc: 'کامل‌ترین سیستم‌عامل مدیریت گروه؛ مجهز به هوش مصنوعی، سیستم اشتراک، فیلتر NSFW، ربات موزیک و ده‌ها قابلیت امنیتی!',
-                features: ['🔐 امنیت و مدیریت: سیستم کامل اخطار، بن، سکوت، قفل‌های پیشرفته (رسانه، لینک)، ضد رگبار و ضد رید.', '🤖 هوش مصنوعی (AI): پاسخگویی خودکار به پیام‌ها با قابلیت تنظیم شخصیت.', '💎 سیستم اشتراک: فروش اشتراک (مدیریت، موزیک، رکورد، NSFW) با تعرفه ۱ تا ۱۲ ماهه.', '🎵 ربات‌های همراه: مجهز به موزیک‌پلیر (یوتیوب/ساندکلود) و رکوردر ویس‌کال.', '🎮 سرگرمی: مجموعه کامل بازی‌ها (مافیا، جرات و حقیقت، تاس)، ۱۰۰ معما، ۱۰۰ جوک و فال حافظ.', '📢 لاگ و گزارش: کانال لاگ اختصاصی برای ثبت تمام وقایع و گزارش‌های روزانه به پیوی مالک.', '⚙️ پنل‌های مدیریتی: پنل سازنده، پنل مالک گروه و پنل سیستم.']
-            },
-            'voice-recorder': {
-                title: 'ریکوردر ویس‌کال', image: 'logo_voice_recorder_robot_mic_wave.png', shortDesc: 'ضبط خودکار تمام مکالمات ویس‌کال با تنظیم بازه زمانی دلخواه و ارسال مستقیم به پیوی مدیر.',
-                features: ['🎧 ضبط کامل مکالمات: ربات به صورت خودکار وارد ویس‌کال شده و تمامی صحبت‌ها را ضبط می‌کند.', '⏱ تنظیم بازه زمانی (کلیپ‌بندی): قابلیت تنظیم مدت زمان هر کلیپ (مثلاً ۱، ۳، ۵، ۱۵ یا ۳۰ دقیقه) توسط مالک گروه.', '🎛 کنترل کامل در دست مدیر: مالک گروه می‌تواند ربات را در هر لحظه روشن یا خاموش کند.', '📥 ارسال امن به پیوی (PV): تمامی فایل‌های صوتی ضبط شده، به صورت مستقیم و امن به چت خصوصی مالک گروه ارسال می‌شوند.']
-            },
-            'content-guard': {
-                title: 'ربات گارد محتوا (فیلتر +18)', image: 'logo_nsfw_robot_icon1.png', shortDesc: 'فیلتر هوشمند محتوای نامناسب (+18) با ۳ سطح حساسیت، اخطار خودکار و سیستم تنبیه (سکوت/بن).',
-                features: ['🎚 ۳ سطح حساسیت هوشمند: دارای ۳ حالت تنظیم حساسیت (کم، متوسط، زیاد) برای تشخیص دقیق محتوای نامناسب.', '🖼 شناسایی انواع رسانه: هوش مصنوعی ربات تمامی عکس‌ها، فیلم‌ها، گیف‌ها و استیکرهای حاوی محتوای غیراخلاقی را شناسایی می‌کند.', '🗑 حذف خودکار و اخطار: پیام نامناسب فوراً از گروه حذف شده و به کاربر متخلف اخطار داده می‌شود.', '⚖️ سیستم تنبیه قابل تنظیم: مدیر گروه می‌تواند تعیین کند که پس از چند بار اخطار، شخص «سکوت»، «اخراج» یا «بن» شود.', '⚙️ مدیریت آسان: تمامی این تنظیمات از داخل پنل خود ربات توسط مالک گروه قابل شخصی‌سازی است.', '⚠️ توجه: این ربات به صورت اشتراک جداگانه ارائه می‌شود.']
-            },
-            'self-bot': {
-                title: 'ربات سلف (Self Bot)', image: 'logo_watch_spy_robot.png', shortDesc: 'رباتی که روی اکانت شخصی شما نصب می‌شود و امکانات پیشرفته‌ای مانند منشی هوشمند، ساعت بیو و پاسخ خودکار را ارائه می‌دهد.',
-                features: ['⚠️ نصب این ربات به معنی دسترسی آن به اکانت شما جهت انجام دستورات است.', '⛔️ گذاشتن ساعت با فونت‌های مختلف بر روی بیو و اسم.', '❈ قابلیت تنظیم حالت خوانده شدن خودکار پیام‌ها.', '⚙️ تنظیم حالت پاسخ خودکار و منشی هوشمند.', '✈️ جواب دادن به شخصی که به شما توهین می‌کند.', '⛈ پیام انیمیشنی و دو زبانه بودن دستورات.', '⚙️ دریافت پنل و تنظیمات اکانت هوشمند.', '⚙️ تغییر نام و کاور فایل‌ها.', '⚙️ اعلان پیام‌های ادیت و حذف شده در پیوی.', '⚙️ ذخیره پروفایل‌های جدید و اعلان حذف پروفایل مخاطبین.', '📖 (امکانات بسیار بیشتری پس از خرید در دسترس شما قرار می‌گیرد).']
-            }
+            'music-player': { title: 'ربات موزیک پلیر', image: 'robot_headphones_transparent.png', shortDesc: 'پخش و دانلود آنلاین موزیک با کیفیت ۳۲۰، همراه با ۴۰ اسکین اختصاصی و اکولایزرهای حرفه‌ای.', features: ['🎧 پخش و دانلود: پخش آنلاین و قابلیت دانلود فایل‌ها با کیفیت عالی ۳۲۰ کیلوبیت بر ثانیه.', '🌐 پشتیبانی از سایت‌های معروف: دریافت و پخش مستقیم از یوتیوب، ساندکلود و چندین پلتفرم دیگر.', '🎨 شخصی‌سازی کامل (۴۰+ اسکین): بیش از ۴۰ قالب ظاهری (اسکین) که مالک گروه می‌تواند تغییر دهد.', '🎛 اکولایزر حرفه‌ای (۲۰+ حالت): نزدیک به ۲۰ حالت اکولایزر و قابلیت تنظیم سرعت پخش موزیک.', '📂 آرشیو هوشمند: آرشیو کامل و منظم تمامی فایل‌های پخش شده برای دسترسی آسان.'] },
+            'video-player': { title: 'ربات ویدیو پلیر', image: 'logo_video_player.png', shortDesc: 'پخش آنلاین شبکه‌های تلویزیونی، ماهواره‌ای و فایل‌های تصویری به صورت مستقیم در گروه.', features: ['📺 پخش زنده تلویزیون: پخش آنلاین شبکه‌های ماهواره‌ای و داخلی.', '🎬 پخش فایل‌های ویدیویی: پخش ویدیوهای ارسالی در گروه با بالاترین کیفیت.', '🚀 سرعت بالا: استریم بدون لگ و روان برای گروه‌های پرجمعیت.'] },
+            'group-manager': { title: 'ربات مدیریت گروه (Ultimate)', image: 'logo_white2_transparent.png', shortDesc: 'کامل‌ترین سیستم‌عامل مدیریت گروه؛ مجهز به هوش مصنوعی، سیستم اشتراک، فیلتر NSFW، ربات موزیک و ده‌ها قابلیت امنیتی!', features: ['🔐 امنیت و مدیریت: سیستم کامل اخطار، بن، سکوت، قفل‌های پیشرفته (رسانه، لینک)، ضد رگبار و ضد رید.', '🤖 هوش مصنوعی (AI): پاسخگویی خودکار به پیام‌ها با قابلیت تنظیم شخصیت.', '💎 سیستم اشتراک: فروش اشتراک (مدیریت، موزیک، رکورد، NSFW) با تعرفه ۱ تا ۱۲ ماهه.', '🎵 ربات‌های همراه: مجهز به موزیک‌پلیر (یوتیوب/ساندکلود) و رکوردر ویس‌کال.', '🎮 سرگرمی: مجموعه کامل بازی‌ها (مافیا، جرات و حقیقت، تاس)، ۱۰۰ معما، ۱۰۰ جوک و فال حافظ.', '📢 لاگ و گزارش: کانال لاگ اختصاصی برای ثبت تمام وقایع و گزارش‌های روزانه به پیوی مالک.', '⚙️ پنل‌های مدیریتی: پنل سازنده، پنل مالک گروه و پنل سیستم.'] },
+            'voice-recorder': { title: 'ریکوردر ویس‌کال', image: 'logo_voice_recorder_robot_mic_wave.png', shortDesc: 'ضبط خودکار تمام مکالمات ویس‌کال با تنظیم بازه زمانی دلخواه و ارسال مستقیم به پیوی مدیر.', features: ['🎧 ضبط کامل مکالمات: ربات به صورت خودکار وارد ویس‌کال شده و تمامی صحبت‌ها را ضبط می‌کند.', '⏱ تنظیم بازه زمانی (کلیپ‌بندی): قابلیت تنظیم مدت زمان هر کلیپ (مثلاً ۱، ۳، ۵، ۱۵ یا ۳۰ دقیقه) توسط مالک گروه.', '🎛 کنترل کامل در دست مدیر: مالک گروه می‌تواند ربات را در هر لحظه روشن یا خاموش کند.', '📥 ارسال امن به پیوی (PV): تمامی فایل‌های صوتی ضبط شده، به صورت مستقیم و امن به چت خصوصی مالک گروه ارسال می‌شوند.'] },
+            'content-guard': { title: 'ربات گارد محتوا (فیلتر +18)', image: 'logo_nsfw_robot_icon1.png', shortDesc: 'فیلتر هوشمند محتوای نامناسب (+18) با ۳ سطح حساسیت، اخطار خودکار و سیستم تنبیه (سکوت/بن).', features: ['🎚 ۳ سطح حساسیت هوشمند: دارای ۳ حالت تنظیم حساسیت (کم، متوسط، زیاد) برای تشخیص دقیق محتوای نامناسب.', '🖼 شناسایی انواع رسانه: هوش مصنوعی ربات تمامی عکس‌ها، فیلم‌ها، گیف‌ها و استیکرهای حاوی محتوای غیراخلاقی را شناسایی می‌کند.', '🗑 حذف خودکار و اخطار: پیام نامناسب فوراً از گروه حذف شده و به کاربر متخلف اخطار داده می‌شود.', '⚖️ سیستم تنبیه قابل تنظیم: مدیر گروه می‌تواند تعیین کند که پس از چند بار اخطار، شخص «سکوت»، «اخراج» یا «بن» شود.', '⚙️ مدیریت آسان: تمامی این تنظیمات از داخل پنل خود ربات توسط مالک گروه قابل شخصی‌سازی است.', '⚠️ توجه: این ربات به صورت اشتراک جداگانه ارائه می‌شود.'] },
+            'self-bot': { title: 'ربات سلف (Self Bot)', image: 'logo_watch_spy_robot.png', shortDesc: 'رباتی که روی اکانت شخصی شما نصب می‌شود و امکانات پیشرفته‌ای مانند منشی هوشمند، ساعت بیو و پاسخ خودکار را ارائه می‌دهد.', features: ['⚠️ نصب این ربات به معنی دسترسی آن به اکانت شما جهت انجام دستورات است.', '⛔️ گذاشتن ساعت با فونت‌های مختلف بر روی بیو و اسم.', '❈ قابلیت تنظیم حالت خوانده شدن خودکار پیام‌ها.', '⚙️ تنظیم حالت پاسخ خودکار و منشی هوشمند.', '✈️ جواب دادن به شخصی که به شما توهین می‌کند.', '⛈ پیام انیمیشنی و دو زبانه بودن دستورات.', '⚙️ دریافت پنل و تنظیمات اکانت هوشمند.', '⚙️ تغییر نام و کاور فایل‌ها.', '⚙️ اعلان پیام‌های ادیت و حذف شده در پیوی.', '⚙️ ذخیره پروفایل‌های جدید و اعلان حذف پروفایل مخاطبین.', '📖 (امکانات بسیار بیشتری پس از خرید در دسترس شما قرار می‌گیرد).'] }
         };
 
         function renderBots() {
             const grid = document.getElementById('bots-grid');
             grid.innerHTML = '';
-            
             for (const [id, bot] of Object.entries(botsData)) {
                 const card = document.createElement('div');
                 card.className = 'bot-card bg-[#1e2329] border border-gray-700 rounded-2xl p-6 flex flex-col justify-between cursor-pointer neon-box group relative overflow-hidden';
                 card.onclick = () => openBotDetail(id);
-                
                 card.innerHTML = `
                     <div>
                         <div class="w-full h-48 relative mb-6 flex justify-center items-center bg-[#0a0c10] rounded-xl overflow-hidden border border-gray-800 group-hover:scale-105 transition-transform duration-300">
                             <img src="${bot.image}" alt="${bot.title}" class="w-40 h-40 object-contain drop-shadow-[0_0_15px_rgba(59,130,246,0.3)]" />
                         </div>
-                        <h3 class="text-2xl font-bold mb-3 text-white">${bot.title}</h3>
-                        <p class="text-gray-400 text-sm mb-6 leading-relaxed">${bot.shortDesc}</p>
+                        <h3 class="text-xl md:text-2xl font-bold mb-3 text-white text-center md:text-right">${bot.title}</h3>
+                        <p class="text-gray-400 text-sm mb-6 leading-relaxed text-center md:text-right">${bot.shortDesc}</p>
                     </div>
                     <div class="flex items-center justify-center mt-4 pt-4 border-t border-gray-700">
-                        <span class="text-blue-400 font-bold group-hover:text-blue-300 flex items-center gap-2 transition-colors">
+                        <span class="text-blue-400 font-bold group-hover:text-blue-300 flex items-center gap-2 transition-colors text-sm md:text-base">
                             مشاهده جزئیات
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
                         </span>
@@ -515,15 +488,12 @@
         function openBotDetail(botId) {
             const bot = botsData[botId];
             if(!bot) return;
-
             document.getElementById('home-view').classList.add('hide');
             const detailView = document.getElementById('bot-detail-view');
             detailView.classList.remove('hide');
-
             document.getElementById('detail-title').innerText = bot.title;
             document.getElementById('detail-image').src = bot.image;
             document.getElementById('detail-desc').innerText = bot.shortDesc;
-            
             const featuresContainer = document.getElementById('detail-features');
             featuresContainer.innerHTML = '';
             bot.features.forEach(feature => {
@@ -532,7 +502,6 @@
                 div.innerHTML = feature;
                 featuresContainer.appendChild(div);
             });
-
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
@@ -542,9 +511,7 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
-            renderBots();
-        });
+        document.addEventListener('DOMContentLoaded', () => { renderBots(); });
     </script>
 
     <script src="https://trtc.io/knocket-sdk/sdk.js?identifier=f672fb450563b86d8y=17924411579157" async></script>

@@ -156,8 +156,8 @@
                         <h1 id="detail-title" class="text-4xl font-extrabold mb-4 text-blue-400 neon-text"></h1>
                         <p id="detail-desc" class="text-gray-400 text-lg mb-6 leading-relaxed"></p>
                         <div class="flex flex-wrap justify-center md:justify-start gap-4">
-                            <!-- Placeholder for Telegram Link -->
-                            <a href="https://t.me/YourSupportID" target="_blank" class="bg-blue-600 hover:bg-blue-500 text-white px-8 py-3 rounded-xl font-bold transition-all shadow-[0_0_20px_rgba(37,99,235,0.4)]">مشاهده قیمت و خرید در تلگرام</a>
+                            <!-- تماس با آیدی شما -->
+                            <a href="https://t.me/Siavashska" target="_blank" class="bg-blue-600 hover:bg-blue-500 text-white px-8 py-3 rounded-xl font-bold transition-all shadow-[0_0_20px_rgba(37,99,235,0.4)]">مشاهده قیمت و خرید در تلگرام</a>
                         </div>
                     </div>
                 </div>
@@ -187,11 +187,18 @@
             <div class="text-center md:text-left bg-[#1e2329] border border-gray-700 p-6 rounded-2xl">
                 <h3 class="text-lg font-bold text-white mb-2">ارتباط با ما</h3>
                 <p class="text-gray-400 text-sm mb-4">برای سفارش ربات یا پشتیبانی به ما پیام دهید.</p>
-                <!-- Placeholder for Telegram Link -->
-                <a href="https://t.me/YourSupportID" target="_blank" class="inline-flex items-center gap-2 bg-[#2AABEE] hover:bg-[#229ED9] text-white px-6 py-2 rounded-lg font-medium transition-all">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
-                    پشتیبانی تلگرام
-                </a>
+                <div class="flex flex-col sm:flex-row gap-3">
+                    <!-- دکمه پشتیبانی (آیدی شما) -->
+                    <a href="https://t.me/Siavashska" target="_blank" class="inline-flex justify-center items-center gap-2 bg-[#2AABEE] hover:bg-[#229ED9] text-white px-6 py-2 rounded-lg font-medium transition-all">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+                        پشتیبانی تلگرام
+                    </a>
+                    <!-- دکمه کانال تیم -->
+                    <a href="https://t.me/Skteamchnl" target="_blank" class="inline-flex justify-center items-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white px-6 py-2 rounded-lg font-medium transition-all">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
+                        کانال تلگرام
+                    </a>
+                </div>
             </div>
         </div>
     </footer>
@@ -205,23 +212,18 @@
             const header = document.getElementById('main-header');
             const homeView = document.getElementById('home-view');
 
-            // 1. Wait 1.5s then shrink logo
-            setTimeout(() => {
-                logo.classList.add('logo-shrink');
-            }, 1500);
-
-            // 2. Wait 2.5s then remove splash and show site
+            setTimeout(() => { logo.classList.add('logo-shrink'); }, 1500);
             setTimeout(() => {
                 splash.style.opacity = '0';
                 setTimeout(() => {
                     splash.style.display = 'none';
                     header.classList.remove('opacity-0');
                     homeView.classList.remove('hide');
-                }, 800); // Wait for fade out
+                }, 800);
             }, 2500);
         });
 
-        // Data for all bots (Updated with exact file names)
+        // Data for all bots
         const botsData = {
             'music-player': {
                 title: 'ربات موزیک پلیر',
@@ -310,7 +312,6 @@
             
             for (const [id, bot] of Object.entries(botsData)) {
                 const card = document.createElement('div');
-                // Added bot-card class for touch effect
                 card.className = 'bot-card bg-[#1e2329] border border-gray-700 rounded-2xl p-6 flex flex-col justify-between cursor-pointer neon-box group relative overflow-hidden';
                 card.onclick = () => openBotDetail(id);
                 
@@ -338,12 +339,10 @@
             const bot = botsData[botId];
             if(!bot) return;
 
-            // Hide Home, Show Detail
             document.getElementById('home-view').classList.add('hide');
             const detailView = document.getElementById('bot-detail-view');
             detailView.classList.remove('hide');
 
-            // Populate Data
             document.getElementById('detail-title').innerText = bot.title;
             document.getElementById('detail-image').src = bot.image;
             document.getElementById('detail-desc').innerText = bot.shortDesc;
@@ -357,7 +356,6 @@
                 featuresContainer.appendChild(div);
             });
 
-            // Scroll to top
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
@@ -368,7 +366,6 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // Initialize Rendering
         document.addEventListener('DOMContentLoaded', () => {
             renderBots();
         });

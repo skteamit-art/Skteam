@@ -24,14 +24,14 @@
             position: absolute;
             top: 50%;
             left: 50%;
-            transform: translate(-50%, -50%) scale(0.6); /* Starts a bit smaller */
+            transform: translate(-50%, -50%) scale(0.6);
             width: 150px;
             height: 150px;
             object-fit: contain;
             z-index: 2;
-            opacity: 0; /* Completely invisible at first */
+            opacity: 0;
             filter: drop-shadow(0 0 25px rgba(59,130,246,0.9));
-            transition: opacity 3s ease, transform 3s ease; /* Slow reveal */
+            transition: opacity 3s ease, transform 3s ease;
         }
         
         @media (min-width: 768px) {
@@ -39,8 +39,8 @@
         }
         
         #main-splash-logo.show {
-            opacity: 1; /* Fades in completely */
-            transform: translate(-50%, -50%) scale(1); /* Grows to full size */
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
         }
 
         /* Main Content */
@@ -312,25 +312,25 @@
             tr: { nav_home: "Ana Sayfa", nav_bots: "Botlar", nav_services: "Hizmetler", nav_about: "Hakkımızda", btn_contact: "İletişim", hero_title_1: "İle", hero_title_2: "Geleceğe Yolculuk Edin", hero_desc: "SK Team programlama grubu, akıllı botlar ve özel web siteleri tasarlayarak işinizin büyümesini hızlandırır.", btn_view_bots: "Botları Gör", trust_1_title: "Anında Teslimat", trust_1_desc: "Botlar satın alımdan hemen sonra aktif edilir.", trust_2_title: "Yüksek Güvenlik", trust_2_desc: "Grubunuz ve hesabınız için tam koruma.", trust_3_title: "7/24 Destek", trust_3_desc: "Ekibimiz size yardımcı olmak için her zaman hazır.", section_bots_title: "SK Team Akıllı Botları", section_bots_desc: "Tam ayrıntıları görmek için her bota tıklayın.", section_services_title: "Özel Hizmetlerimiz", section_services_desc: "Ayrıntıları görmek için her hizmete tıklayın.", srv_1_title: "Mesajlaşma Botları", srv_1_desc: "İhtiyaçlarınıza göre Telegram, Eitaa, Bale ve Rubika için botlar tasarlıyor ve inşa ediyoruz.", srv_2_title: "Web Tasarımı", srv_2_desc: "En yüksek kalitede kurumsal, e-ticaret ve kişisel web siteleri tasarlıyoruz.", srv_3_title: "Sosyal Medya Yönetimi", srv_3_desc: "Akıllı asistan botları ile işinizi yönetin ve büyütün.", section_about_title: "SK Team Hakkında", section_about_desc: "SK Team, siber uzayda işletmeleri güçlendirmek için kurulmuş uzman ve yaratıcı programcılardan oluşur. Akıllı botlar ve otomasyonlarla sosyal ağlarınızı büyütmek ve kolayca yönetmek için araçlar sunuyoruz. Uzmanlığımız size özel botlar yapmaktır.", footer_rights: "Tüm hakları SK Team'e aittir. © 2024", footer_contact_title: "İletişim", btn_support: "Telegram Desteği", btn_channel: "Telegram Kanalı", btn_email: "Ekip E-postası", btn_vcard: "Dijital Kart", btn_back: "Ana Sayfaya Dön", btn_buy_telegram: "Fiyat Gör ve Telegram'da Satın Al", section_features: "Özellikler", btn_order_telegram: "Telegram'da Sipariş Ver ve Danış", qr_modal_title: "Dijital Kartvizit", qr_modal_desc: "İletişim bilgilerimizi almak için bu barkodu telefonunuzun kamerasıyla tarayın." }
         };
 
+        // Safe Language Change Function
         function changeLanguage(lang) {
-            document.documentElement.lang = lang;
-            document.documentElement.dir = (lang === 'fa' || lang === 'ar') ? 'rtl' : 'ltr';
+            try {
+                document.documentElement.lang = lang;
+                document.documentElement.dir = (lang === 'fa' || lang === 'ar') ? 'rtl' : 'ltr';
 
-            document.querySelectorAll('select').forEach(select => select.value = lang);
+                document.querySelectorAll('select').forEach(select => select.value = lang);
 
-            document.querySelectorAll('[data-i18n]').forEach(el => {
-                const key = el.getAttribute('data-i18n');
-                if(translations[lang] && translations[lang][key]) {
-                    el.innerHTML = translations[lang][key];
-                }
-            });
-            localStorage.setItem('skteam_lang', lang);
+                document.querySelectorAll('[data-i18n]').forEach(el => {
+                    const key = el.getAttribute('data-i18n');
+                    if(translations[lang] && translations[lang][key]) {
+                        el.innerHTML = translations[lang][key];
+                    }
+                });
+                localStorage.setItem('skteam_lang', lang);
+            } catch(e) {
+                console.warn("Language change error: ", e);
+            }
         }
-
-        window.addEventListener('DOMContentLoaded', () => {
-            const savedLang = localStorage.getItem('skteam_lang') || 'fa';
-            changeLanguage(savedLang);
-        });
 
         function toggleMobileMenu() {
             const menu = document.getElementById('mobile-menu');
@@ -379,7 +379,6 @@
         const centerX = centerCanvas.width / 2;
         const centerY = centerCanvas.height / 2;
         
-        // Logo is 150px on mobile, so radius 85 creates a tight ring around it. 
         const targetRadius = isMobile ? 85 : 160; 
         const particleCount = isMobile ? 200 : 350; 
 
@@ -387,8 +386,7 @@
             centerParticles.push({
                 x: centerX + (Math.random() - 0.5) * 80, 
                 y: Math.random() * -centerCanvas.height,
-                speed: Math.random() * 1 + 0.5, // MUCH SLOWER
-                // Distribute targets evenly around the circle starting from the bottom (Math.PI/2)
+                speed: Math.random() * 1 + 0.5,
                 targetAngle: (Math.PI / 2) + (i / particleCount) * (Math.PI * 2),
                 char: bgLetters.charAt(Math.floor(Math.random() * bgLetters.length))
             });
@@ -406,15 +404,12 @@
                     p.y += p.speed;
                     if (p.y > centerCanvas.height) p.y = -20;
                 } else if (phase === 'form_ring') {
-                    // Calculate their exact spot on the ring
                     const targetX = centerX + Math.cos(p.targetAngle) * targetRadius;
                     const targetY = centerY + Math.sin(p.targetAngle) * targetRadius;
                     
-                    // Glide to the target
                     p.x += (targetX - p.x) * 0.04;
                     p.y += (targetY - p.y) * 0.04;
                 } else if (phase === 'hold') {
-                    // Gently rotate the completed ring
                     p.targetAngle += 0.005;
                     p.x = centerX + Math.cos(p.targetAngle) * targetRadius;
                     p.y = centerY + Math.sin(p.targetAngle) * targetRadius;
@@ -428,25 +423,31 @@
         }
         animateCenter();
 
-        // Timeline
+        // Timeline & Initialization
         window.addEventListener('DOMContentLoaded', () => {
+            // Language Init
+            let savedLang = 'fa';
+            try {
+                savedLang = localStorage.getItem('skteam_lang') || 'fa';
+            } catch(e) {}
+            changeLanguage(savedLang);
+
+            // Render Bots
+            renderBots();
+
+            // Splash Timeline
             const splashScreen = document.getElementById('splash-screen');
             const mainLogo = document.getElementById('main-splash-logo');
             const mainContent = document.getElementById('main-content');
             const homeView = document.getElementById('home-view');
 
-            // t=0s to 4s: Gentle rain.
-
-            // t=4s: Start filling the ring (gliding to their circular targets)
             setTimeout(() => { phase = 'form_ring'; }, 4000);
 
-            // t=8s: Ring is full. Start fading in the logo (CSS handles the slow fade).
             setTimeout(() => {
                 phase = 'hold';
                 mainLogo.classList.add('show'); 
             }, 8000);
 
-            // t=13s: Disperse and shrink to corner
             setTimeout(() => {
                 phase = 'disperse';
                 splashScreen.classList.add('shrink-to-corner');
@@ -485,6 +486,7 @@
 
         function renderBots() {
             const grid = document.getElementById('bots-grid');
+            if(!grid) return;
             grid.innerHTML = '';
             for (const [id, bot] of Object.entries(botsData)) {
                 const card = document.createElement('div');
@@ -534,8 +536,6 @@
             document.getElementById('home-view').classList.remove('hide');
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
-
-        document.addEventListener('DOMContentLoaded', () => { renderBots(); });
     </script>
 
     <script src="https://trtc.io/knocket-sdk/sdk.js?identifier=f672fb450563b86d8y=17924411579157" async></script>

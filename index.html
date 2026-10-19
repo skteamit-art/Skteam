@@ -10,26 +10,37 @@
         body { font-family: Vazir, sans-serif; background-color: #0a0c10; color: white; overflow-x: hidden; margin: 0; }
         
         /* Background Matrix (Slow) */
-        #bg-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; opacity: 0.4; }
+        #bg-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; opacity: 0.3; }
 
-        /* Splash Screen Container */
-        #splash-screen { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: transparent; z-index: 9999; overflow: hidden; transition: all 2s cubic-bezier(0.25, 1, 0.5, 1); transform-origin: top right; }
+        /* Splash Screen Container - Flexbox perfectly centers children */
+        #splash-screen { 
+            position: fixed; 
+            top: 0; left: 0; 
+            width: 100vw; height: 100vh; 
+            background-color: transparent; 
+            z-index: 9999; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            transition: all 2s cubic-bezier(0.25, 1, 0.5, 1); 
+            transform-origin: top right; 
+            overflow: hidden;
+        }
+        
         #splash-screen.shrink-to-corner { transform: translate(42vw, -42vh) scale(0.12); opacity: 0; }
 
-        /* Center Fast Particles Canvas */
+        /* Center Particles Canvas - Fills container */
         #center-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; }
 
-        /* The Actual Logo Image */
+        /* The Actual Logo Image - Sits inside flexbox, perfectly centered */
         #main-splash-logo {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%) scale(0.6);
+            position: relative; /* Not absolute, lets flexbox handle centering */
             width: 150px;
             height: 150px;
             object-fit: contain;
             z-index: 2;
             opacity: 0;
+            transform: scale(0.6);
             filter: drop-shadow(0 0 25px rgba(59,130,246,0.9));
             transition: opacity 3s ease, transform 3s ease;
         }
@@ -40,7 +51,7 @@
         
         #main-splash-logo.show {
             opacity: 1;
-            transform: translate(-50%, -50%) scale(1);
+            transform: scale(1);
         }
 
         /* Main Content */
@@ -98,7 +109,7 @@
                 </nav>
 
                 <div class="flex items-center gap-2 md:gap-4">
-                    <!-- Language Selector (Placed clearly in header) -->
+                    <!-- Language Selector -->
                     <select id="lang-select" onchange="changeLanguage(this.value)" class="bg-[#1e2329] border border-gray-700 text-gray-300 text-xs md:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-20 md:w-24 p-1.5 md:p-2 cursor-pointer">
                         <option value="fa">فارسی</option>
                         <option value="en">EN</option>
@@ -312,14 +323,11 @@
             tr: { nav_home: "Ana Sayfa", nav_bots: "Botlar", nav_services: "Hizmetler", nav_about: "Hakkımızda", btn_contact: "İletişim", hero_title_1: "İle", hero_title_2: "Geleceğe Yolculuk Edin", hero_desc: "SK Team programlama grubu, akıllı botlar ve özel web siteleri tasarlayarak işinizin büyümesini hızlandırır.", btn_view_bots: "Botları Gör", trust_1_title: "Anında Teslimat", trust_1_desc: "Botlar satın alımdan hemen sonra aktif edilir.", trust_2_title: "Yüksek Güvenlik", trust_2_desc: "Grubunuz ve hesabınız için tam koruma.", trust_3_title: "7/24 Destek", trust_3_desc: "Ekibimiz size yardımcı olmak için her zaman hazır.", section_bots_title: "SK Team Akıllı Botları", section_bots_desc: "Tam ayrıntıları görmek için her bota tıklayın.", section_services_title: "Özel Hizmetlerimiz", section_services_desc: "Ayrıntıları görmek için her hizmete tıklayın.", srv_1_title: "Mesajlaşma Botları", srv_1_desc: "İhtiyaçlarınıza göre Telegram, Eitaa, Bale ve Rubika için botlar tasarlıyor ve inşa ediyoruz.", srv_2_title: "Web Tasarımı", srv_2_desc: "En yüksek kalitede kurumsal, e-ticaret ve kişisel web siteleri tasarlıyoruz.", srv_3_title: "Sosyal Medya Yönetimi", srv_3_desc: "Akıllı asistan botları ile işinizi yönetin ve büyütün.", section_about_title: "SK Team Hakkında", section_about_desc: "SK Team, siber uzayda işletmeleri güçlendirmek için kurulmuş uzman ve yaratıcı programcılardan oluşur. Akıllı botlar ve otomasyonlarla sosyal ağlarınızı büyütmek ve kolayca yönetmek için araçlar sunuyoruz. Uzmanlığımız size özel botlar yapmaktır.", footer_rights: "Tüm hakları SK Team'e aittir. © 2024", footer_contact_title: "İletişim", btn_support: "Telegram Desteği", btn_channel: "Telegram Kanalı", btn_email: "Ekip E-postası", btn_vcard: "Dijital Kart", btn_back: "Ana Sayfaya Dön", btn_buy_telegram: "Fiyat Gör ve Telegram'da Satın Al", section_features: "Özellikler", btn_order_telegram: "Telegram'da Sipariş Ver ve Danış", qr_modal_title: "Dijital Kartvizit", qr_modal_desc: "İletişim bilgilerimizi almak için bu barkodu telefonunuzun kamerasıyla tarayın." }
         };
 
-        // Safe Language Change Function
         function changeLanguage(lang) {
             try {
                 document.documentElement.lang = lang;
                 document.documentElement.dir = (lang === 'fa' || lang === 'ar') ? 'rtl' : 'ltr';
-
                 document.querySelectorAll('select').forEach(select => select.value = lang);
-
                 document.querySelectorAll('[data-i18n]').forEach(el => {
                     const key = el.getAttribute('data-i18n');
                     if(translations[lang] && translations[lang][key]) {
@@ -327,9 +335,7 @@
                     }
                 });
                 localStorage.setItem('skteam_lang', lang);
-            } catch(e) {
-                console.warn("Language change error: ", e);
-            }
+            } catch(e) {}
         }
 
         function toggleMobileMenu() {
@@ -366,7 +372,7 @@
         }
         setInterval(drawBgMatrix, 50);
 
-        // Center Particles (Ring Formation)
+        // ================= WATER FILL LOGIC =================
         const centerCanvas = document.getElementById('center-canvas');
         const centerCtx = centerCanvas.getContext('2d');
         centerCanvas.width = window.innerWidth;
@@ -374,87 +380,111 @@
         
         const isMobile = window.innerWidth < 768;
         let centerParticles = [];
-        let phase = 'rain'; 
         
+        // Since we use flexbox to center the logo, the center of the canvas is exactly the center of the screen
         const centerX = centerCanvas.width / 2;
         const centerY = centerCanvas.height / 2;
         
         const targetRadius = isMobile ? 85 : 160; 
-        const particleCount = isMobile ? 200 : 350; 
+        
+        // 1. Generate a solid circle of targets
+        // We use a grid with a step, but remove the offset so they are perfectly aligned
+        const step = isMobile ? 14 : 18; 
+        let rawTargets = [];
 
-        for (let i = 0; i < particleCount; i++) {
-            centerParticles.push({
-                x: centerX + (Math.random() - 0.5) * 80, 
-                y: Math.random() * -centerCanvas.height,
-                speed: Math.random() * 1 + 0.5,
-                targetAngle: (Math.PI / 2) + (i / particleCount) * (Math.PI * 2),
-                char: bgLetters.charAt(Math.floor(Math.random() * bgLetters.length))
-            });
+        for (let y = -targetRadius; y <= targetRadius; y += step) {
+            for (let x = -targetRadius; x <= targetRadius; x += step) {
+                // Check if the point is inside the circle
+                if (x*x + y*y <= targetRadius*targetRadius) {
+                    rawTargets.push({ 
+                        x: centerX + x, 
+                        y: centerY + y 
+                    });
+                }
+            }
         }
 
-        function animateCenter() {
+        // 2. Sort targets from BOTTOM to TOP (highest Y value first)
+        rawTargets.sort((a, b) => b.y - a.y);
+
+        // 3. Create particles with a staggered start time to simulate water filling
+        const totalFillTime = 3000; // 3 seconds to fill the whole circle
+        rawTargets.forEach((target, index) => {
+            // Bottom particles start immediately (delay = 0). 
+            // Top particles start later (delay = totalFillTime).
+            const progress = index / rawTargets.length; 
+            const delay = progress * totalFillTime;
+
+            centerParticles.push({
+                x: target.x,
+                targetY: target.y,
+                y: -50, // Start above the screen
+                speed: Math.random() * 2 + 4, // Falling speed
+                char: bgLetters.charAt(Math.floor(Math.random() * bgLetters.length)),
+                startTime: delay,
+                isSettled: false
+            });
+        });
+
+        let startTime = performance.now();
+
+        function animateCenter(currentTime) {
+            if (!startTime) startTime = currentTime;
+            const elapsedTime = currentTime - startTime;
+
             centerCtx.clearRect(0, 0, centerCanvas.width, centerCanvas.height);
-            centerCtx.shadowBlur = 10;
-            centerCtx.shadowColor = '#3b82f6';
+            
+            // Increase clarity
+            centerCtx.shadowBlur = 0; // Remove blur for crisp text
             centerCtx.fillStyle = '#60a5fa'; 
-            centerCtx.font = (isMobile ? '12px' : '16px') + ' monospace';
+            centerCtx.font = 'bold ' + (isMobile ? '16px' : '22px') + ' monospace';
+            centerCtx.textAlign = 'center';
+            centerCtx.textBaseline = 'middle';
 
             centerParticles.forEach(p => {
-                if (phase === 'rain') {
-                    p.y += p.speed;
-                    if (p.y > centerCanvas.height) p.y = -20;
-                } else if (phase === 'form_ring') {
-                    const targetX = centerX + Math.cos(p.targetAngle) * targetRadius;
-                    const targetY = centerY + Math.sin(p.targetAngle) * targetRadius;
-                    
-                    p.x += (targetX - p.x) * 0.04;
-                    p.y += (targetY - p.y) * 0.04;
-                } else if (phase === 'hold') {
-                    p.targetAngle += 0.005;
-                    p.x = centerX + Math.cos(p.targetAngle) * targetRadius;
-                    p.y = centerY + Math.sin(p.targetAngle) * targetRadius;
-                } else if (phase === 'disperse') {
-                    p.x += Math.cos(p.targetAngle) * 5;
-                    p.y += Math.sin(p.targetAngle) * 5 + 2; 
+                // Check if it's time for this particle to drop
+                if (elapsedTime > p.startTime) {
+                    if (!p.isSettled) {
+                        p.y += p.speed;
+                        if (p.y >= p.targetY) {
+                            p.y = p.targetY;
+                            p.isSettled = true; // Particle has reached the bottom of its column
+                        }
+                    }
+                    centerCtx.fillText(p.char, p.x, p.y);
                 }
-                centerCtx.fillText(p.char, p.x, p.y);
             });
+
             requestAnimationFrame(animateCenter);
         }
-        animateCenter();
+        requestAnimationFrame(animateCenter);
 
         // Timeline & Initialization
         window.addEventListener('DOMContentLoaded', () => {
             // Language Init
             let savedLang = 'fa';
-            try {
-                savedLang = localStorage.getItem('skteam_lang') || 'fa';
-            } catch(e) {}
+            try { savedLang = localStorage.getItem('skteam_lang') || 'fa'; } catch(e) {}
             changeLanguage(savedLang);
 
-            // Render Bots
             renderBots();
 
-            // Splash Timeline
             const splashScreen = document.getElementById('splash-screen');
             const mainLogo = document.getElementById('main-splash-logo');
             const mainContent = document.getElementById('main-content');
             const homeView = document.getElementById('home-view');
 
-            setTimeout(() => { phase = 'form_ring'; }, 4000);
-
+            // Wait for the water to fill (approx 3 seconds) + 0.5s buffer
             setTimeout(() => {
-                phase = 'hold';
-                mainLogo.classList.add('show'); 
-            }, 8000);
+                mainLogo.classList.add('show'); // Fade in the actual logo over the filled circle
+            }, 3500);
 
+            // Wait for the logo to be fully visible, then shrink to corner
             setTimeout(() => {
-                phase = 'disperse';
                 splashScreen.classList.add('shrink-to-corner');
                 mainContent.classList.add('show');
                 homeView.classList.remove('hide');
                 setTimeout(() => { splashScreen.style.display = 'none'; }, 2000);
-            }, 13000); 
+            }, 8500); 
         });
 
         // Services & Modals

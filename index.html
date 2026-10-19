@@ -9,35 +9,32 @@
     <style>
         body { font-family: Vazir, sans-serif; background-color: #0a0c10; color: white; overflow-x: hidden; margin: 0; }
         
-        /* Custom Neon Scrollbar */
+        /* Scrollbar */
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: #0a0c10; }
         ::-webkit-scrollbar-thumb { background: #3b82f6; border-radius: 4px; box-shadow: 0 0 10px #3b82f6; }
-        ::-webkit-scrollbar-thumb:hover { background: #60a5fa; }
 
-        /* Background Matrix */
-        #bg-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; opacity: 0.5; }
+        /* Background Canvas */
+        #bg-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; opacity: 0.4; }
 
         /* Splash Screen */
-        #splash-screen { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: transparent; z-index: 9999; display: flex; justify-content: center; align-items: center; transition: all 2s cubic-bezier(0.25, 1, 0.5, 1); transform-origin: top right; overflow: hidden; }
-        #splash-screen.shrink-to-corner { transform: translate(42vw, -42vh) scale(0.12); opacity: 0; }
+        #splash-screen { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: #000; z-index: 9999; display: flex; justify-content: center; align-items: center; transition: all 2s cubic-bezier(0.25, 1, 0.5, 1); transform-origin: top right; overflow: hidden; }
+        #splash-screen.shrink-to-corner { transform: translate(42vw, -42vh) scale(0.12); opacity: 0; background-color: transparent; pointer-events: none; }
         #center-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; }
-        #main-splash-logo { position: relative; width: 150px; height: 150px; object-fit: contain; z-index: 2; opacity: 0; transform: scale(0.6); filter: drop-shadow(0 0 25px rgba(59,130,246,0.9)); transition: opacity 3s ease, transform 3s ease; }
-        @media (min-width: 768px) { #main-splash-logo { width: 280px; height: 280px; filter: drop-shadow(0 0 40px rgba(59,130,246,0.9)); } }
+        #main-splash-logo { position: relative; width: 150px; height: 150px; object-fit: contain; z-index: 2; opacity: 0; transform: scale(0.6); filter: drop-shadow(0 0 25px rgba(59,130,246,0.9)); transition: opacity 2s ease, transform 2s ease; }
+        @media (min-width: 768px) { #main-splash-logo { width: 260px; height: 260px; filter: drop-shadow(0 0 40px rgba(59,130,246,0.9)); } }
         #main-splash-logo.show { opacity: 1; transform: scale(1); }
 
         /* Main Content */
-        #main-content { position: relative; z-index: 10; opacity: 0; visibility: hidden; transition: opacity 2s ease, visibility 2s; }
+        #main-content { position: relative; z-index: 10; opacity: 0; visibility: hidden; transition: opacity 1.5s ease, visibility 1.5s; }
         #main-content.show { opacity: 1; visibility: visible; }
 
-        /* Neon Effects & Animations */
+        /* Animations */
         .neon-text { text-shadow: 0 0 15px rgba(59,130,246,0.7); }
         .neon-border { border: 1px solid rgba(59, 130, 246, 0.3); box-shadow: 0 0 15px rgba(59, 130, 246, 0.1); transition: all 0.3s ease; }
         .neon-border:hover { border-color: #3b82f6; box-shadow: 0 0 25px rgba(59, 130, 246, 0.6); transform: translateY(-5px); }
-        
         .pulse-btn { animation: pulse 2s infinite; }
         @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7); } 70% { box-shadow: 0 0 0 15px rgba(59, 130, 246, 0); } 100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); } }
-
         .floating { animation: float 4s ease-in-out infinite; }
         @keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-15px); } 100% { transform: translateY(0px); } }
         
@@ -47,8 +44,8 @@
         .hide { display: none !important; }
         .fade-in { animation: fadeIn 0.4s ease-in-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        .bot-card:active { transform: scale(0.96) !important; transition: transform 0.1s; }
 
+        /* Header Glow */
         .header-glow::after { content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 2px; background: linear-gradient(90deg, transparent, #3b82f6, transparent); opacity: 0.5; }
 
         /* Modals */
@@ -62,11 +59,13 @@
 
     <canvas id="bg-canvas"></canvas>
 
+    <!-- Splash Screen -->
     <div id="splash-screen">
         <canvas id="center-canvas"></canvas>
         <img id="main-splash-logo" src="skteam_ring_transparent.png" alt="SK Team Logo">
     </div>
 
+    <!-- Main Content -->
     <div id="main-content" class="flex-grow flex flex-col min-h-screen">
         
         <!-- Header -->
@@ -87,9 +86,9 @@
 
                 <div class="flex items-center gap-2 md:gap-4">
                     <!-- Nixie Clock Canvas -->
-                    <canvas id="clock-canvas" class="hidden md:block" width="160" height="40"></canvas>
+                    <canvas id="clock-canvas" width="150" height="36" class="hidden md:block"></canvas>
 
-                    <select id="lang-select" onchange="changeLanguage(this.value)" class="bg-[#1e2329] border border-gray-700 text-gray-300 text-xs md:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-24 p-2 cursor-pointer z-50">
+                    <select id="lang-select" onchange="changeLanguage(this.value)" class="bg-[#1e2329] border border-gray-700 text-gray-300 text-xs md:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-24 p-1.5 cursor-pointer z-50">
                         <option value="fa">فارسی</option>
                         <option value="en">English</option>
                         <option value="ar">العربية</option>
@@ -118,12 +117,13 @@
         </header>
 
         <main class="flex-grow">
+            <!-- Home View -->
             <div id="home-view" class="hide fade-in">
                 <section class="relative max-w-7xl mx-auto px-4 py-16 md:py-24 flex flex-col md:flex-row items-center justify-between gap-10 md:gap-12">
                     <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-blue-600 rounded-full blur-[120px] opacity-20 pointer-events-none"></div>
                     
                     <div class="flex-1 text-center md:text-right relative z-10">
-                        <h1 id="hero-title" class="text-4xl md:text-6xl font-extrabold leading-tight mb-6 min-h-[120px] md:min-h-[160px] cursor-blink"></h1>
+                        <h1 id="hero-title" class="text-3xl md:text-5xl lg:text-6xl font-extrabold leading-tight mb-6 min-h-[120px] md:min-h-[160px] cursor-blink"></h1>
                         <p class="text-gray-400 text-base md:text-xl mb-8 leading-relaxed max-w-2xl mx-auto md:mx-0" data-i18n="hero_desc"></p>
                         <div class="flex items-center justify-center md:justify-start gap-4">
                             <a href="#bots" class="bg-blue-600 hover:bg-blue-500 text-white px-6 md:px-8 py-3 rounded-xl font-bold text-base md:text-lg transition-all pulse-btn" data-i18n="btn_view_bots"></a>
@@ -189,6 +189,7 @@
                 </section>
             </div>
 
+            <!-- Bot Detail View -->
             <div id="bot-detail-view" class="hide fade-in max-w-5xl mx-auto px-4 py-12">
                 <button onclick="showHome()" class="mb-8 flex items-center gap-2 text-blue-400 hover:text-blue-300 font-bold bg-[#1e2329] px-4 py-2 rounded-lg border border-gray-700 transition-colors text-sm md:text-base">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" /></svg>
@@ -291,7 +292,21 @@
     <script>
         // ================= TRANSLATIONS DICTIONARY =================
         const translations = {
-            fa: { nav_home: "خانه", nav_bots: "ربات‌ها", nav_services: "خدمات ما", nav_about: "درباره ما", btn_contact: "ارتباط با ما", hero_title_1: "با", hero_title_2: "به آینده سفر کنید", hero_desc: "تیم SK Team با طراحی ربات‌های هوشمند و سایت‌های اختصاصی، به رشد و رونق کسب و کار شما سرعت می‌بخشد.", btn_view_bots: "مشاهده ربات‌ها", trust_1_title: "تحویل آنی", trust_1_desc: "ربات‌ها بلافاصله پس از خرید فعال می‌شوند.", trust_2_title: "امنیت بالا", trust_2_desc: "محافظت کامل از گروه و اکانت شما.", trust_3_title: "پشتیبانی ۲۴/۷", trust_3_desc: "تیم ما همیشه آماده پاسخگویی به شماست.", section_bots_title: "ربات‌های هوشمند SK Team", section_bots_desc: "روی هر ربات کلیک کنید تا توضیحات کامل آن را ببینید.", section_services_title: "خدمات تخصصی ما", section_services_desc: "برای مشاهده جزئیات هر خدمت، روی آن کلیک کنید.", srv_1_title: "ربات‌های پیام‌رسان", srv_1_desc: "طراحی و ساخت ربات برای تلگرام، ایتا، بله و روبیکا بر اساس نیاز شما.", srv_2_title: "طراحی وب‌سایت", srv_2_desc: "طراحی انواع سایت شرکتی، فروشگاهی و شخصی با بالاترین کیفیت.", srv_3_title: "مدیریت شبکه‌های مجازی", srv_3_desc: "مدیریت و رونق کسب و کار شما با ربات‌های منشی و پاسخگوی خودکار.", section_about_title: "درباره SK Team", section_about_desc: "تیم SK Team متشکل از برنامه‌نویسان متخصص و خلاق است که با هدف رونق کسب و کارها در فضای مجازی شکل گرفته است. ما با طراحی ربات‌های هوشمند و اتوماسیون‌های پیشرفته، ابزارهای لازم برای رشد و مدیریت آسان‌تر شبکه‌های اجتماعی شما را فراهم می‌کنیم. تخصص ما ساخت ربات‌های سفارشی و اختصاصی برای شماست.", footer_rights: "تمامی حقوق مادی و معنوی این سایت متعلق به SK Team می‌باشد. © 2024", footer_contact_title: "ارتباط با ما", btn_support: "پشتیبانی", btn_channel: "کانال", btn_email: "ایمیل", btn_vcard: "کارت ویزیت", btn_instagram: "اینستاگرام", btn_back: "بازگشت به صفحه اصلی", btn_buy_telegram: "مشاهده قیمت و خرید در تلگرام", section_features: "امکانات و قابلیت‌ها", btn_order_telegram: "ثبت سفارش و مشاوره در تلگرام", qr_modal_title: "کارت ویزیت دیجیتال", qr_modal_desc: "برای دریافت اطلاعات تماس و کارت ویزیت ما، این بارکد را با دوربین گوشی خود اسکن کنید.",
+            fa: { 
+                nav_home: "خانه", nav_bots: "ربات‌ها", nav_services: "خدمات ما", nav_about: "درباره ما", btn_contact: "ارتباط با ما", 
+                hero_title_1: "با", hero_title_2: "به آینده سفر کنید", hero_desc: "تیم SK Team با طراحی ربات‌های هوشمند و سایت‌های اختصاصی، به رشد و رونق کسب و کار شما سرعت می‌بخشد.", 
+                btn_view_bots: "مشاهده ربات‌ها", 
+                trust_1_title: "تحویل آنی", trust_1_desc: "ربات‌ها بلافاصله پس از خرید فعال می‌شوند.", 
+                trust_2_title: "امنیت بالا", trust_2_desc: "محافظت کامل از گروه و اکانت شما.", 
+                trust_3_title: "پشتیبانی ۲۴/۷", trust_3_desc: "تیم ما همیشه آماده پاسخگویی به شماست.", 
+                section_bots_title: "ربات‌های هوشمند SK Team", section_bots_desc: "روی هر ربات کلیک کنید تا توضیحات کامل آن را ببینید.", 
+                section_services_title: "خدمات تخصصی ما", section_services_desc: "برای مشاهده جزئیات هر خدمت، روی آن کلیک کنید.", 
+                srv_1_title: "ربات‌های پیام‌رسان", srv_1_desc: "طراحی و ساخت ربات برای تلگرام، ایتا، بله و روبیکا بر اساس نیاز شما.", 
+                srv_2_title: "طراحی وب‌سایت", srv_2_desc: "طراحی انواع سایت شرکتی، فروشگاهی و شخصی با بالاترین کیفیت.", 
+                srv_3_title: "مدیریت شبکه‌های مجازی", srv_3_desc: "مدیریت و رونق کسب و کار شما با ربات‌های منشی و پاسخگوی خودکار.", 
+                section_about_title: "درباره SK Team", section_about_desc: "تیم SK Team متشکل از برنامه‌نویسان متخصص و خلاق است که با هدف رونق کسب و کارها در فضای مجازی شکل گرفته است. ما با طراحی ربات‌های هوشمند و اتوماسیون‌های پیشرفته، ابزارهای لازم برای رشد و مدیریت آسان‌تر شبکه‌های اجتماعی شما را فراهم می‌کنیم. تخصص ما ساخت ربات‌های سفارشی و اختصاصی برای شماست.", 
+                footer_rights: "تمامی حقوق مادی و معنوی این سایت متعلق به SK Team می‌باشد. © 2024", footer_contact_title: "ارتباط با ما", 
+                btn_support: "پشتیبانی", btn_channel: "کانال", btn_email: "ایمیل", btn_instagram: "اینستاگرام", btn_vcard: "کارت ویزیت", btn_back: "بازگشت به صفحه اصلی", btn_buy_telegram: "مشاهده قیمت و خرید در تلگرام", section_features: "امکانات و قابلیت‌ها", btn_order_telegram: "ثبت سفارش و مشاوره در تلگرام", qr_modal_title: "کارت ویزیت دیجیتال", qr_modal_desc: "برای دریافت اطلاعات تماس و کارت ویزیت ما، این بارکد را با دوربین گوشی خود اسکن کنید.",
                 bots: {
                     'music-player': { title: 'ربات موزیک پلیر', shortDesc: 'پخش و دانلود آنلاین موزیک با کیفیت ۳۲۰، همراه با ۴۰ اسکین اختصاصی و اکولایزرهای حرفه‌ای.', features: ['🎧 پخش و دانلود: پخش آنلاین و قابلیت دانلود فایل‌ها با کیفیت عالی ۳۲۰ کیلوبیت بر ثانیه.', '🌐 پشتیبانی از سایت‌های معروف: دریافت و پخش مستقیم از یوتیوب، ساندکلود و چندین پلتفرم دیگر.', '🎨 شخصی‌سازی کامل (۴۰+ اسکین): بیش از ۴۰ قالب ظاهری (اسکین) که مالک گروه می‌تواند تغییر دهد.', '🎛 اکولایزر حرفه‌ای (۲۰+ حالت): نزدیک به ۲۰ حالت اکولایزر و قابلیت تنظیم سرعت پخش موزیک.', '📂 آرشیو هوشمند: آرشیو کامل و منظم تمامی فایل‌های پخش شده برای دسترسی آسان.'] },
                     'video-player': { title: 'ربات ویدیو پلیر', shortDesc: 'پخش آنلاین شبکه‌های تلویزیونی، ماهواره‌ای و فایل‌های تصویری به صورت مستقیم در گروه.', features: ['📺 پخش زنده تلویزیون: پخش آنلاین شبکه‌های ماهواره‌ای و داخلی.', '🎬 پخش فایل‌های ویدیویی: پخش ویدیوهای ارسالی در گروه با بالاترین کیفیت.', '🚀 سرعت بالا: استریم بدون لگ و روان برای گروه‌های پرجمعیت.'] },
@@ -343,11 +358,10 @@
             }
         };
 
-        // ================= NIXIE CLOCK (DOT MATRIX) =================
+        // ================= MATRIX CLOCK (NIXIE) =================
         const clockCanvas = document.getElementById('clock-canvas');
         const clockCtx = clockCanvas.getContext('2d');
         
-        // 5x5 dot matrix patterns for digits 0-9 and colon
         const digitMatrix = {
             '0': ["01110", "10001", "10001", "10001", "01110"],
             '1': ["00100", "01100", "00100", "00100", "01110"],
@@ -365,11 +379,10 @@
         let clockParticles = [];
         let lastTimeStr = "";
         
-        // Initialize clock particles
         function initClock() {
             clockParticles = [];
-            for (let i = 0; i < 8; i++) { // 6 digits + 2 colons
-                clockParticles.push({ dots: [], targetPattern: null });
+            for (let i = 0; i < 8; i++) { 
+                clockParticles.push({ dots: [] });
             }
         }
 
@@ -382,7 +395,6 @@
             clockCtx.fill();
             clockCtx.stroke();
             
-            // Subtle inner glow
             clockCtx.fillStyle = 'rgba(59, 130, 246, 0.05)';
             clockCtx.beginPath();
             clockCtx.roundRect(x+1, y+1, w-2, h-2, 4);
@@ -398,12 +410,10 @@
                     const char = timeStr[i];
                     const pattern = digitMatrix[char];
                     
-                    // Add falling particles for old dots
                     clockParticles[i].dots.forEach(dot => {
-                        dot.vy = Math.random() * 2 + 1; // Start falling
+                        dot.vy = Math.random() * 2 + 1; 
                     });
                     
-                    // Spawn new dots from top
                     const newDots = [];
                     for (let r = 0; r < 5; r++) {
                         for (let c = 0; c < 5; c++) {
@@ -425,32 +435,29 @@
 
             clockCtx.clearRect(0, 0, clockCanvas.width, clockCanvas.height);
             
-            const tubeW = 18;
-            const tubeH = 32;
+            const tubeW = 16;
+            const tubeH = 28;
             const gap = 4;
             let startX = 5;
             const startY = 4;
 
-            // Draw 6 tubes
             for(let i=0; i<6; i++) {
                 drawClockTube(startX + i * (tubeW + gap), startY, tubeW, tubeH);
             }
-            // Draw 2 colons
-            drawClockTube(startX + 2 * (tubeW + gap) - 2, startY + 6, 4, 20);
-            drawClockTube(startX + 5 * (tubeW + gap) - 2, startY + 6, 4, 20);
+            drawClockTube(startX + 2 * (tubeW + gap) - 2, startY + 6, 4, 16);
+            drawClockTube(startX + 5 * (tubeW + gap) - 2, startY + 6, 4, 16);
 
-            // Draw particles
             clockCtx.fillStyle = '#60a5fa';
             clockCtx.shadowBlur = 4;
             clockCtx.shadowColor = '#3b82f6';
 
             for (let i = 0; i < 8; i++) {
-                let offsetX = startX + i * (tubeW + gap) + 3;
-                let offsetY = startY + 5;
+                let offsetX = startX + i * (tubeW + gap) + 2;
+                let offsetY = startY + 4;
                 
                 if (i === 2 || i === 5) {
                     offsetX = startX + i * (tubeW + gap) + 1;
-                    offsetY = startY + 10;
+                    offsetY = startY + 8;
                 }
 
                 const tubeDots = clockParticles[i].dots;
@@ -460,7 +467,7 @@
                     if (dot.y < dot.targetY) {
                         dot.y += dot.vy;
                         if (dot.y > dot.targetY) dot.y = dot.targetY;
-                    } else if (dot.vy > 0) { // Falling off
+                    } else if (dot.vy > 0) { 
                         dot.y += dot.vy;
                         if (dot.y > tubeH) {
                             tubeDots.splice(j, 1);
@@ -469,7 +476,7 @@
                     }
 
                     clockCtx.beginPath();
-                    clockCtx.arc(offsetX + dot.x, offsetY + dot.y, 1.2, 0, Math.PI * 2);
+                    clockCtx.arc(offsetX + dot.x, offsetY + dot.y, 1, 0, Math.PI * 2);
                     clockCtx.fill();
                 }
             }
@@ -479,11 +486,10 @@
         initClock();
         updateClockAnim();
 
-
-        // ================= LANGUAGE & TYPEWRITER =================
-        let typewriterInterval;
+        // ================= TYPEWRITER =================
+        let typewriterTimeout;
         function startTypewriter(lang) {
-            clearInterval(typewriterInterval);
+            clearTimeout(typewriterTimeout);
             const titleElement = document.getElementById('hero-title');
             const t1 = translations[lang].hero_title_1;
             const t2 = translations[lang].hero_title_2;
@@ -494,24 +500,35 @@
             const part2 = document.getElementById('typewriter-part2');
             let i = 0, j = 0;
             
-            typewriterInterval = setInterval(() => {
-                if (i < t1.length) { part1.textContent += t1.charAt(i); i++; }
-                else if (j < t2.length) { part2.textContent += t2.charAt(j); j++; }
-                else { clearInterval(typewriterInterval); }
-            }, 100); 
+            function type() {
+                if (i < t1.length) {
+                    part1.textContent += t1.charAt(i);
+                    i++;
+                    typewriterTimeout = setTimeout(type, 80);
+                } else if (j < t2.length) {
+                    part2.textContent += t2.charAt(j);
+                    j++;
+                    typewriterTimeout = setTimeout(type, 80);
+                }
+            }
+            type();
         }
 
+        // ================= LANGUAGE & INIT =================
         function changeLanguage(lang) {
             try {
                 document.documentElement.lang = lang;
                 document.documentElement.dir = (lang === 'fa' || lang === 'ar') ? 'rtl' : 'ltr';
+                
                 document.querySelectorAll('select').forEach(select => select.value = lang);
+                
                 document.querySelectorAll('[data-i18n]').forEach(el => {
                     const key = el.getAttribute('data-i18n');
                     if(translations[lang] && translations[lang][key]) {
                         el.innerHTML = translations[lang][key];
                     }
                 });
+                
                 localStorage.setItem('skteam_lang', lang);
                 renderBots(lang);
                 startTypewriter(lang);
@@ -549,7 +566,7 @@
         }
         setInterval(drawBgMatrix, 50);
 
-        // ================= WATER FILL LOGIC =================
+        // ================= SPLASH SCREEN =================
         const centerCanvas = document.getElementById('center-canvas');
         const centerCtx = centerCanvas.getContext('2d');
         centerCanvas.width = window.innerWidth;
@@ -571,9 +588,8 @@
             }
         }
 
-        rawTargets.sort((a, b) => b.y - a.y); // Bottom to Top
-
-        const totalFillTime = 3000; 
+        rawTargets.sort((a, b) => b.y - a.y); 
+        const totalFillTime = 2500; 
         rawTargets.forEach((target, index) => {
             const delay = (index / rawTargets.length) * totalFillTime;
             centerParticles.push({
@@ -614,7 +630,7 @@
         }
         requestAnimationFrame(animateCenter);
 
-        // ================= INIT & TIMELINE =================
+        // ================= INITIALIZATION =================
         window.addEventListener('DOMContentLoaded', () => {
             let savedLang = 'fa';
             try { savedLang = localStorage.getItem('skteam_lang') || 'fa'; } catch(e) {}
@@ -625,16 +641,16 @@
             const mainContent = document.getElementById('main-content');
             const homeView = document.getElementById('home-view');
 
-            setTimeout(() => { mainLogo.classList.add('show'); }, 3500);
+            setTimeout(() => { mainLogo.classList.add('show'); }, 3000);
             setTimeout(() => {
                 splashScreen.classList.add('shrink-to-corner');
                 mainContent.classList.add('show');
                 homeView.classList.remove('hide');
                 setTimeout(() => { splashScreen.style.display = 'none'; }, 2000);
-            }, 8000); 
+            }, 7000); 
         });
 
-        // ================= BOTS DATA & RENDER =================
+        // ================= RENDER BOTS =================
         const baseBotsData = {
             'music-player': 'robot_headphones_transparent.png',
             'video-player': 'logo_video_player.png',
@@ -705,6 +721,7 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
+        // Modals
         function openServiceModal(serviceId) {
             const lang = localStorage.getItem('skteam_lang') || 'fa';
             const data = translations[lang][`srv_${serviceId}_title`] ? {
@@ -723,7 +740,7 @@
         function closeQRModal() { document.getElementById('qr-modal').classList.remove('active'); }
     </script>
 
-    <!-- Knocket Chat Widget Script (Fixed) -->
+    <!-- Knocket Chat Widget -->
     <script src="https://trtc.io/knocket-sdk/sdk.js?identifier=f672fb450563b86d8&y=17924411579157" async></script>
 </body>
 </html>

@@ -10,19 +10,38 @@
         body { font-family: Vazir, sans-serif; background-color: #0a0c10; color: white; overflow-x: hidden; margin: 0; }
         
         /* Background Matrix (Slow) */
-        #bg-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; opacity: 0.5; }
+        #bg-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; opacity: 0.4; }
 
         /* Splash Screen Container */
-        #splash-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: transparent; z-index: 9999; display: flex; justify-content: center; align-items: center; transition: all 2s cubic-bezier(0.25, 1, 0.5, 1); transform-origin: top right; }
+        #splash-screen { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: transparent; z-index: 9999; overflow: hidden; transition: all 2s cubic-bezier(0.25, 1, 0.5, 1); transform-origin: top right; }
         #splash-screen.shrink-to-corner { transform: translate(42vw, -42vh) scale(0.12); opacity: 0; }
 
         /* Center Fast Particles Canvas */
         #center-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; }
 
         /* The Actual Logo Image */
-        #main-splash-logo { position: absolute; width: 150px; height: 150px; object-fit: contain; z-index: 2; opacity: 0; transform: scale(0.8); filter: drop-shadow(0 0 25px rgba(59,130,246,0.9)); transition: opacity 2s ease, transform 2s ease; }
-        @media (min-width: 768px) { #main-splash-logo { width: 300px; height: 300px; filter: drop-shadow(0 0 40px rgba(59,130,246,0.9)); } }
-        #main-splash-logo.show { opacity: 1; transform: scale(1); }
+        #main-splash-logo {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.6); /* Starts a bit smaller */
+            width: 150px;
+            height: 150px;
+            object-fit: contain;
+            z-index: 2;
+            opacity: 0; /* Completely invisible at first */
+            filter: drop-shadow(0 0 25px rgba(59,130,246,0.9));
+            transition: opacity 3s ease, transform 3s ease; /* Slow reveal */
+        }
+        
+        @media (min-width: 768px) {
+            #main-splash-logo { width: 280px; height: 280px; filter: drop-shadow(0 0 40px rgba(59,130,246,0.9)); }
+        }
+        
+        #main-splash-logo.show {
+            opacity: 1; /* Fades in completely */
+            transform: translate(-50%, -50%) scale(1); /* Grows to full size */
+        }
 
         /* Main Content */
         #main-content { position: relative; z-index: 10; opacity: 0; visibility: hidden; transition: opacity 2s ease, visibility 2s; }
@@ -62,7 +81,7 @@
         
         <!-- Responsive Header -->
         <header class="bg-[#0f1218]/90 backdrop-blur-md border-b border-gray-800 sticky top-0 z-40">
-            <div class="max-w-7xl mx-auto px-4 h-20 flex items-center justify-between gap-2">
+            <div class="max-w-7xl mx-auto px-2 md:px-4 h-20 flex items-center justify-between gap-2">
                 
                 <!-- Logo -->
                 <a href="#" onclick="showHome()" class="flex items-center gap-2 md:gap-3">
@@ -79,17 +98,17 @@
                 </nav>
 
                 <div class="flex items-center gap-2 md:gap-4">
-                    <!-- Language Selector (Desktop) -->
-                    <select id="lang-select" onchange="changeLanguage(this.value)" class="hidden md:block bg-[#1e2329] border border-gray-700 text-gray-300 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-24 p-2 cursor-pointer">
+                    <!-- Language Selector (Placed clearly in header) -->
+                    <select id="lang-select" onchange="changeLanguage(this.value)" class="bg-[#1e2329] border border-gray-700 text-gray-300 text-xs md:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-20 md:w-24 p-1.5 md:p-2 cursor-pointer">
                         <option value="fa">فارسی</option>
-                        <option value="en">English</option>
-                        <option value="ar">العربية</option>
-                        <option value="ru">Русский</option>
-                        <option value="tr">Türkçe</option>
+                        <option value="en">EN</option>
+                        <option value="ar">عربی</option>
+                        <option value="ru">RU</option>
+                        <option value="tr">TR</option>
                     </select>
 
                     <!-- Mobile Menu Button -->
-                    <button onclick="toggleMobileMenu()" class="md:hidden text-gray-300 hover:text-white focus:outline-none p-2">
+                    <button onclick="toggleMobileMenu()" class="md:hidden text-gray-300 hover:text-white focus:outline-none p-1">
                         <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
                         </svg>
@@ -102,16 +121,7 @@
 
             <!-- Mobile Dropdown Menu -->
             <div id="mobile-menu" class="hidden md:hidden bg-[#0f1218] border-b border-gray-800 absolute w-full shadow-2xl">
-                <div class="px-4 py-4 flex flex-col gap-4 text-center text-gray-300 font-medium">
-                    <!-- Language Selector (Mobile) -->
-                    <select onchange="changeLanguage(this.value); toggleMobileMenu();" class="bg-[#1e2329] border border-gray-700 text-gray-300 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2 mb-2">
-                        <option value="fa">فارسی (Persian)</option>
-                        <option value="en">English</option>
-                        <option value="ar">العربية (Arabic)</option>
-                        <option value="ru">Русский (Russian)</option>
-                        <option value="tr">Türkçe (Turkish)</option>
-                    </select>
-
+                <div class="px-4 py-4 flex flex-col gap-3 text-center text-gray-300 font-medium">
                     <a href="#" onclick="showHome(); toggleMobileMenu()" class="hover:text-blue-400 py-2 border-b border-gray-800" data-i18n="nav_home">خانه</a>
                     <a href="#bots" onclick="showHome(); toggleMobileMenu()" class="hover:text-blue-400 py-2 border-b border-gray-800" data-i18n="nav_bots">ربات‌ها</a>
                     <a href="#services" onclick="showHome(); toggleMobileMenu()" class="hover:text-blue-400 py-2 border-b border-gray-800" data-i18n="nav_services">خدمات ما</a>
@@ -241,7 +251,7 @@
                         <img src="skteam_ring_transparent.png" alt="SK Team Logo" class="h-10 w-auto object-contain" />
                         <span class="text-xl font-bold tracking-wider">Sk<span class="text-blue-500">.team</span></span>
                     </div>
-                    <p class="text-gray-500 text-sm" data-i18n="footer_rights">تمامی حقوق مادی و معنوی این سایت متعلق به SK Team می‌باشد. &copy; 2024</p>
+                    <p class="text-gray-500 text-sm" data-i18n="footer_rights">تمامی حقوق مادی و معنوی این سایت متعلق به SK Team می‌باشد. © 2024</p>
                 </div>
                 
                 <div class="text-center md:text-left bg-[#1e2329] border border-gray-700 p-6 rounded-2xl w-full md:w-auto">
@@ -295,142 +305,33 @@
     <script>
         // ================= TRANSLATIONS DICTIONARY =================
         const translations = {
-            fa: {
-                nav_home: "خانه", nav_bots: "ربات‌ها", nav_services: "خدمات ما", nav_about: "درباره ما", btn_contact: "ارتباط با ما",
-                hero_title_1: "با", hero_title_2: "به آینده سفر کنید",
-                hero_desc: "تیم برنامه‌نویسی SK Team با طراحی ربات‌های هوشمند و سایت‌های اختصاصی، به رشد و رونق کسب و کار شما سرعت می‌بخشد.",
-                btn_view_bots: "مشاهده ربات‌ها",
-                trust_1_title: "تحویل آنی", trust_1_desc: "ربات‌ها بلافاصله پس از خرید فعال می‌شوند.",
-                trust_2_title: "امنیت بالا", trust_2_desc: "محافظت کامل از گروه و اکانت شما.",
-                trust_3_title: "پشتیبانی ۲۴/۷", trust_3_desc: "تیم ما همیشه آماده پاسخگویی به شماست.",
-                section_bots_title: "ربات‌های هوشمند SK Team", section_bots_desc: "روی هر ربات کلیک کنید تا توضیحات کامل آن را ببینید.",
-                section_services_title: "خدمات تخصصی ما", section_services_desc: "برای مشاهده جزئیات هر خدمت، روی آن کلیک کنید.",
-                srv_1_title: "ربات‌های پیام‌رسان", srv_1_desc: "طراحی و ساخت ربات برای تلگرام، ایتا، بله و روبیکا بر اساس نیاز شما.",
-                srv_2_title: "طراحی وب‌سایت", srv_2_desc: "طراحی انواع سایت شرکتی، فروشگاهی و شخصی با بالاترین کیفیت.",
-                srv_3_title: "مدیریت شبکه‌های مجازی", srv_3_desc: "مدیریت و رونق کسب و کار شما با ربات‌های منشی و پاسخگوی خودکار.",
-                section_about_title: "درباره SK Team",
-                section_about_desc: "تیم SK Team متشکل از برنامه‌نویسان متخصص و خلاق است که با هدف رونق کسب و کارها در فضای مجازی شکل گرفته است. ما با طراحی ربات‌های هوشمند و اتوماسیون‌های پیشرفته، ابزارهای لازم برای رشد و مدیریت آسان‌تر شبکه‌های اجتماعی شما را فراهم می‌کنیم. تخصص ما ساخت ربات‌های سفارشی و اختصاصی برای شماست.",
-                footer_rights: "تمامی حقوق مادی و معنوی این سایت متعلق به SK Team می‌باشد. © 2024",
-                footer_contact_title: "ارتباط با ما", btn_support: "پشتیبانی تلگرام", btn_channel: "کانال تلگرام", btn_email: "ایمیل تیم", btn_vcard: "کارت ویزیت",
-                btn_back: "بازگشت به صفحه اصلی", btn_buy_telegram: "مشاهده قیمت و خرید در تلگرام", section_features: "امکانات و قابلیت‌ها",
-                btn_order_telegram: "ثبت سفارش و مشاوره در تلگرام", qr_modal_title: "کارت ویزیت دیجیتال", qr_modal_desc: "برای دریافت اطلاعات تماس و کارت ویزیت ما، این بارکد را با دوربین گوشی خود اسکن کنید."
-            },
-            en: {
-                nav_home: "Home", nav_bots: "Bots", nav_services: "Services", nav_about: "About Us", btn_contact: "Contact Us",
-                hero_title_1: "With", hero_title_2: "Travel to the Future",
-                hero_desc: "SK Team programming group accelerates your business growth by designing smart bots and custom websites.",
-                btn_view_bots: "View Bots",
-                trust_1_title: "Instant Delivery", trust_1_desc: "Bots are activated immediately after purchase.",
-                trust_2_title: "High Security", trust_2_desc: "Full protection for your group and account.",
-                trust_3_title: "24/7 Support", trust_3_desc: "Our team is always ready to help you.",
-                section_bots_title: "SK Team Smart Bots", section_bots_desc: "Click on each bot to see full details.",
-                section_services_title: "Our Specialized Services", section_services_desc: "Click on each service to see details.",
-                srv_1_title: "Messenger Bots", srv_1_desc: "Design and build bots for Telegram, Eitaa, Bale, and Rubika based on your needs.",
-                srv_2_title: "Web Design", srv_2_desc: "Designing corporate, e-commerce, and personal websites with the highest quality.",
-                srv_3_title: "Social Media Management", srv_3_desc: "Manage and boost your business with intelligent assistant bots.",
-                section_about_title: "About SK Team",
-                section_about_desc: "SK Team consists of expert and creative programmers formed to boost businesses in cyberspace. We provide tools to grow and easily manage your social networks with smart bots and automations. Our specialty is building custom bots for you.",
-                footer_rights: "All rights reserved by SK Team. © 2024",
-                footer_contact_title: "Contact Us", btn_support: "Telegram Support", btn_channel: "Telegram Channel", btn_email: "Team Email", btn_vcard: "Digital Card",
-                btn_back: "Back to Home", btn_buy_telegram: "View Price & Buy on Telegram", section_features: "Features & Capabilities",
-                btn_order_telegram: "Order & Consult on Telegram", qr_modal_title: "Digital Business Card", qr_modal_desc: "Scan this barcode with your phone camera to get our contact info."
-            },
-            ar: {
-                nav_home: "الرئيسية", nav_bots: "الروبوتات", nav_services: "خدماتنا", nav_about: "من نحن", btn_contact: "اتصل بنا",
-                hero_title_1: "مع", hero_title_2: "سافر إلى المستقبل",
-                hero_desc: "فريق SK Team للبرمجة يسرع نمو أعمالك من خلال تصميم روبوتات ذكية ومواقع ويب مخصصة.",
-                btn_view_bots: "عرض الروبوتات",
-                trust_1_title: "تسليم فوري", trust_1_desc: "يتم تنشيط الروبوتات فور الشراء.",
-                trust_2_title: "أمن عالي", trust_2_desc: "حماية كاملة لمجموعتك وحسابك.",
-                trust_3_title: "دعم 24/7", trust_3_desc: "فريقنا مستعد دائمًا لمساعدتك.",
-                section_bots_title: "روبوتات SK Team الذكية", section_bots_desc: "انقر على كل روبوت لرؤية التفاصيل الكاملة.",
-                section_services_title: "خدماتنا المتخصصة", section_services_desc: "انقر على كل خدمة لرؤية التفاصيل.",
-                srv_1_title: "روبوتات المراسلة", srv_1_desc: "تصميم وبناء روبوتات لـ Telegram و Eitaa و Bale و Rubika بناءً على احتياجاتك.",
-                srv_2_title: "تصميم المواقع", srv_2_desc: "تصميم مواقع الشركات والتجارة الإلكترونية والمواقع الشخصية بأعلى جودة.",
-                srv_3_title: "إدارة وسائل التواصل", srv_3_desc: "إدارة وتعزيز أعمالك باستخدام روبوتات المساعد الذكي.",
-                section_about_title: "عن SK Team",
-                section_about_desc: "يتكون SK Team من مبرمجين خبراء ومبدعين تم تشكيلهم لتعزيز الأعمال في الفضاء الإلكتروني. نحن نقدم أدوات لتنمية وإدارة شبكاتك الاجتماعية بسهولة باستخدام الروبوتات الذكية. تخصصنا هو بناء روبوتات مخصصة لك.",
-                footer_rights: "جميع الحقوق محفوظة لـ SK Team. © 2024",
-                footer_contact_title: "اتصل بنا", btn_support: "دعم تليجرام", btn_channel: "قناة تليجرام", btn_email: "بريد الفريق", btn_vcard: "بطاقة رقمية",
-                btn_back: "العودة للرئيسية", btn_buy_telegram: "عرض السعر والشراء على تليجرام", section_features: "الميزات والقدرات",
-                btn_order_telegram: "اطلب واستشر على تليجرام", qr_modal_title: "بطاقة زيارة رقمية", qr_modal_desc: "امسح هذا الباركود بكاميرا هاتفك للحصول على معلومات الاتصال."
-            },
-            ru: {
-                nav_home: "Главная", nav_bots: "Боты", nav_services: "Услуги", nav_about: "О нас", btn_contact: "Связаться с нами",
-                hero_title_1: "С", hero_title_2: "Путешествуйте в будущее",
-                hero_desc: "Программистская группа SK Team ускоряет рост вашего бизнеса, разрабатывая умных ботов и индивидуальные веб-сайты.",
-                btn_view_bots: "Посмотреть ботов",
-                trust_1_title: "Мгновенная доставка", trust_1_desc: "Боты активируются сразу после покупки.",
-                trust_2_title: "Высокая безопасность", trust_2_desc: "Полная защита вашей группы и аккаунта.",
-                trust_3_title: "Поддержка 24/7", trust_3_desc: "Наша команда всегда готова помочь вам.",
-                section_bots_title: "Умные боты SK Team", section_bots_desc: "Нажмите на каждого бота, чтобы увидеть подробности.",
-                section_services_title: "Наши услуги", section_services_desc: "Нажмите на каждую услугу, чтобы увидеть детали.",
-                srv_1_title: "Боты для мессенджеров", srv_1_desc: "Разработка ботов для Telegram, Eitaa, Bale и Rubika в соответствии с вашими потребностями.",
-                srv_2_title: "Веб-дизайн", srv_2_desc: "Разработка корпоративных, интернет-магазинов и личных сайтов высочайшего качества.",
-                srv_3_title: "Управление соцсетями", srv_3_desc: "Управляйте и развивайте свой бизнес с помощью умных ботов-помощников.",
-                section_about_title: "О SK Team",
-                section_about_desc: "SK Team состоит из экспертов и креативных программистов, созданных для развития бизнеса в киберпространстве. Мы предоставляем инструменты для роста и легкого управления вашими соцсетями с помощью умных ботов и автоматизации. Наша специальность — создание индивидуальных ботов для вас.",
-                footer_rights: "Все права защищены SK Team. © 2024",
-                footer_contact_title: "Связаться с нами", btn_support: "Поддержка в Telegram", btn_channel: "Канал в Telegram", btn_email: "Email команды", btn_vcard: "Цифровая визитка",
-                btn_back: "Назад на главную", btn_buy_telegram: "Цена и покупка в Telegram", section_features: "Особенности",
-                btn_order_telegram: "Заказать и проконсультироваться в Telegram", qr_modal_title: "Цифровая визитная карточка", qr_modal_desc: "Отсканируйте этот штрих-код камерой телефона, чтобы получить контактную информацию."
-            },
-            tr: {
-                nav_home: "Ana Sayfa", nav_bots: "Botlar", nav_services: "Hizmetler", nav_about: "Hakkımızda", btn_contact: "İletişim",
-                hero_title_1: "İle", hero_title_2: "Geleceğe Yolculuk Edin",
-                hero_desc: "SK Team programlama grubu, akıllı botlar ve özel web siteleri tasarlayarak işinizin büyümesini hızlandırır.",
-                btn_view_bots: "Botları Gör",
-                trust_1_title: "Anında Teslimat", trust_1_desc: "Botlar satın alımdan hemen sonra aktif edilir.",
-                trust_2_title: "Yüksek Güvenlik", trust_2_desc: "Grubunuz ve hesabınız için tam koruma.",
-                trust_3_title: "7/24 Destek", trust_3_desc: "Ekibimiz size yardımcı olmak için her zaman hazır.",
-                section_bots_title: "SK Team Akıllı Botları", section_bots_desc: "Tam ayrıntıları görmek için her bota tıklayın.",
-                section_services_title: "Özel Hizmetlerimiz", section_services_desc: "Ayrıntıları görmek için her hizmete tıklayın.",
-                srv_1_title: "Mesajlaşma Botları", srv_1_desc: "İhtiyaçlarınıza göre Telegram, Eitaa, Bale ve Rubika için botlar tasarlıyor ve inşa ediyoruz.",
-                srv_2_title: "Web Tasarımı", srv_2_desc: "En yüksek kalitede kurumsal, e-ticaret ve kişisel web siteleri tasarlıyoruz.",
-                srv_3_title: "Sosyal Medya Yönetimi", srv_3_desc: "Akıllı asistan botları ile işinizi yönetin ve büyütün.",
-                section_about_title: "SK Team Hakkında",
-                section_about_desc: "SK Team, siber uzayda işletmeleri güçlendirmek için kurulmuş uzman ve yaratıcı programcılardan oluşur. Akıllı botlar ve otomasyonlarla sosyal ağlarınızı büyütmek ve kolayca yönetmek için araçlar sunuyoruz. Uzmanlığımız size özel botlar yapmaktır.",
-                footer_rights: "Tüm hakları SK Team'e aittir. © 2024",
-                footer_contact_title: "İletişim", btn_support: "Telegram Desteği", btn_channel: "Telegram Kanalı", btn_email: "Ekip E-postası", btn_vcard: "Dijital Kart",
-                btn_back: "Ana Sayfaya Dön", btn_buy_telegram: "Fiyat Gör ve Telegram'da Satın Al", section_features: "Özellikler",
-                btn_order_telegram: "Telegram'da Sipariş Ver ve Danış", qr_modal_title: "Dijital Kartvizit", qr_modal_desc: "İletişim bilgilerimizi almak için bu barkodu telefonunuzun kamerasıyla tarayın."
-            }
+            fa: { nav_home: "خانه", nav_bots: "ربات‌ها", nav_services: "خدمات ما", nav_about: "درباره ما", btn_contact: "ارتباط با ما", hero_title_1: "با", hero_title_2: "به آینده سفر کنید", hero_desc: "تیم برنامه‌نویسی SK Team با طراحی ربات‌های هوشمند و سایت‌های اختصاصی، به رشد و رونق کسب و کار شما سرعت می‌بخشد.", btn_view_bots: "مشاهده ربات‌ها", trust_1_title: "تحویل آنی", trust_1_desc: "ربات‌ها بلافاصله پس از خرید فعال می‌شوند.", trust_2_title: "امنیت بالا", trust_2_desc: "محافظت کامل از گروه و اکانت شما.", trust_3_title: "پشتیبانی ۲۴/۷", trust_3_desc: "تیم ما همیشه آماده پاسخگویی به شماست.", section_bots_title: "ربات‌های هوشمند SK Team", section_bots_desc: "روی هر ربات کلیک کنید تا توضیحات کامل آن را ببینید.", section_services_title: "خدمات تخصصی ما", section_services_desc: "برای مشاهده جزئیات هر خدمت، روی آن کلیک کنید.", srv_1_title: "ربات‌های پیام‌رسان", srv_1_desc: "طراحی و ساخت ربات برای تلگرام، ایتا، بله و روبیکا بر اساس نیاز شما.", srv_2_title: "طراحی وب‌سایت", srv_2_desc: "طراحی انواع سایت شرکتی، فروشگاهی و شخصی با بالاترین کیفیت.", srv_3_title: "مدیریت شبکه‌های مجازی", srv_3_desc: "مدیریت و رونق کسب و کار شما با ربات‌های منشی و پاسخگوی خودکار.", section_about_title: "درباره SK Team", section_about_desc: "تیم SK Team متشکل از برنامه‌نویسان متخصص و خلاق است که با هدف رونق کسب و کارها در فضای مجازی شکل گرفته است. ما با طراحی ربات‌های هوشمند و اتوماسیون‌های پیشرفته، ابزارهای لازم برای رشد و مدیریت آسان‌تر شبکه‌های اجتماعی شما را فراهم می‌کنیم. تخصص ما ساخت ربات‌های سفارشی و اختصاصی برای شماست.", footer_rights: "تمامی حقوق مادی و معنوی این سایت متعلق به SK Team می‌باشد. © 2024", footer_contact_title: "ارتباط با ما", btn_support: "پشتیبانی تلگرام", btn_channel: "کانال تلگرام", btn_email: "ایمیل تیم", btn_vcard: "کارت ویزیت", btn_back: "بازگشت به صفحه اصلی", btn_buy_telegram: "مشاهده قیمت و خرید در تلگرام", section_features: "امکانات و قابلیت‌ها", btn_order_telegram: "ثبت سفارش و مشاوره در تلگرام", qr_modal_title: "کارت ویزیت دیجیتال", qr_modal_desc: "برای دریافت اطلاعات تماس و کارت ویزیت ما، این بارکد را با دوربین گوشی خود اسکن کنید." },
+            en: { nav_home: "Home", nav_bots: "Bots", nav_services: "Services", nav_about: "About Us", btn_contact: "Contact Us", hero_title_1: "With", hero_title_2: "Travel to the Future", hero_desc: "SK Team programming group accelerates your business growth by designing smart bots and custom websites.", btn_view_bots: "View Bots", trust_1_title: "Instant Delivery", trust_1_desc: "Bots are activated immediately after purchase.", trust_2_title: "High Security", trust_2_desc: "Full protection for your group and account.", trust_3_title: "24/7 Support", trust_3_desc: "Our team is always ready to help you.", section_bots_title: "SK Team Smart Bots", section_bots_desc: "Click on each bot to see full details.", section_services_title: "Our Specialized Services", section_services_desc: "Click on each service to see details.", srv_1_title: "Messenger Bots", srv_1_desc: "Design and build bots for Telegram, Eitaa, Bale, and Rubika based on your needs.", srv_2_title: "Web Design", srv_2_desc: "Designing corporate, e-commerce, and personal websites with the highest quality.", srv_3_title: "Social Media Management", srv_3_desc: "Manage and boost your business with intelligent assistant bots.", section_about_title: "About SK Team", section_about_desc: "SK Team consists of expert and creative programmers formed to boost businesses in cyberspace. We provide tools to grow and easily manage your social networks with smart bots and automations. Our specialty is building custom bots for you.", footer_rights: "All rights reserved by SK Team. © 2024", footer_contact_title: "Contact Us", btn_support: "Telegram Support", btn_channel: "Telegram Channel", btn_email: "Team Email", btn_vcard: "Digital Card", btn_back: "Back to Home", btn_buy_telegram: "View Price & Buy on Telegram", section_features: "Features & Capabilities", btn_order_telegram: "Order & Consult on Telegram", qr_modal_title: "Digital Business Card", qr_modal_desc: "Scan this barcode with your phone camera to get our contact info." },
+            ar: { nav_home: "الرئيسية", nav_bots: "الروبوتات", nav_services: "خدماتنا", nav_about: "من نحن", btn_contact: "اتصل بنا", hero_title_1: "مع", hero_title_2: "سافر إلى المستقبل", hero_desc: "فريق SK Team للبرمجة يسرع نمو أعمالك من خلال تصميم روبوتات ذكية ومواقع ويب مخصصة.", btn_view_bots: "عرض الروبوتات", trust_1_title: "تسليم فوري", trust_1_desc: "يتم تنشيط الروبوتات فور الشراء.", trust_2_title: "أمن عالي", trust_2_desc: "حماية كاملة لمجموعتك وحسابك.", trust_3_title: "دعم 24/7", trust_3_desc: "فريقنا مستعد دائمًا لمساعدتك.", section_bots_title: "روبوتات SK Team الذكية", section_bots_desc: "انقر على كل روبوت لرؤية التفاصيل الكاملة.", section_services_title: "خدماتنا المتخصصة", section_services_desc: "انقر على كل خدمة لرؤية التفاصيل.", srv_1_title: "روبوتات المراسلة", srv_1_desc: "تصميم وبناء روبوتات لـ Telegram و Eitaa و Bale و Rubika بناءً على احتياجاتك.", srv_2_title: "تصميم المواقع", srv_2_desc: "تصميم مواقع الشركات والتجارة الإلكترونية والمواقع الشخصية بأعلى جودة.", srv_3_title: "إدارة وسائل التواصل", srv_3_desc: "إدارة وتعزيز أعمالك باستخدام روبوتات المساعد الذكي.", section_about_title: "عن SK Team", section_about_desc: "يتكون SK Team من مبرمجين خبراء ومبدعين تم تشكيلهم لتعزيز الأعمال في الفضاء الإلكتروني. نحن نقدم أدوات لتنمية وإدارة شبكاتك الاجتماعية بسهولة باستخدام الروبوتات الذكية. تخصصنا هو بناء روبوتات مخصصة لك.", footer_rights: "جميع الحقوق محفوظة لـ SK Team. © 2024", footer_contact_title: "اتصل بنا", btn_support: "دعم تليجرام", btn_channel: "قناة تليجرام", btn_email: "بريد الفريق", btn_vcard: "بطاقة رقمية", btn_back: "العودة للرئيسية", btn_buy_telegram: "عرض السعر والشراء على تليجرام", section_features: "الميزات والقدرات", btn_order_telegram: "اطلب واستشر على تليجرام", qr_modal_title: "بطاقة زيارة رقمية", qr_modal_desc: "امسح هذا الباركود بكاميرا هاتفك للحصول على معلومات الاتصال." },
+            ru: { nav_home: "Главная", nav_bots: "Боты", nav_services: "Услуги", nav_about: "О нас", btn_contact: "Связаться с нами", hero_title_1: "С", hero_title_2: "Путешествуйте в будущее", hero_desc: "Программистская группа SK Team ускоряет рост вашего бизнеса, разрабатывая умных ботов и индивидуальные веб-сайты.", btn_view_bots: "Посмотреть ботов", trust_1_title: "Мгновенная доставка", trust_1_desc: "Боты активируются сразу после покупки.", trust_2_title: "Высокая безопасность", trust_2_desc: "Полная защита вашей группы и аккаунта.", trust_3_title: "Поддержка 24/7", trust_3_desc: "Наша команда всегда готова помочь вам.", section_bots_title: "Умные боты SK Team", section_bots_desc: "Нажмите на каждого бота, чтобы увидеть подробности.", section_services_title: "Наши услуги", section_services_desc: "Нажмите на каждую услугу, чтобы увидеть детали.", srv_1_title: "Боты для мессенджеров", srv_1_desc: "Разработка ботов для Telegram, Eitaa, Bale и Rubika в соответствии с вашими потребностями.", srv_2_title: "Веб-дизайн", srv_2_desc: "Разработка корпоративных, интернет-магазинов и личных сайтов высочайшего качества.", srv_3_title: "Управление соцсетями", srv_3_desc: "Управляйте и развивайте свой бизнес с помощью умных ботов-помощников.", section_about_title: "О SK Team", section_about_desc: "SK Team состоит из экспертов и креативных программистов, созданных для развития бизнеса в киберпространстве. Мы предоставляем инструменты для роста и легкого управления вашими соцсетями с помощью умных ботов и автоматизации. Наша специальность — создание индивидуальных ботов для вас.", footer_rights: "Все права защищены SK Team. © 2024", footer_contact_title: "Связаться с нами", btn_support: "Поддержка в Telegram", btn_channel: "Канал в Telegram", btn_email: "Email команды", btn_vcard: "Цифровая визитка", btn_back: "Назад на главную", btn_buy_telegram: "Цена и покупка в Telegram", section_features: "Особенности", btn_order_telegram: "Заказать и проконсультироваться в Telegram", qr_modal_title: "Цифровая визитная карточка", qr_modal_desc: "Отсканируйте этот штрих-код камерой телефона, чтобы получить контактную информацию." },
+            tr: { nav_home: "Ana Sayfa", nav_bots: "Botlar", nav_services: "Hizmetler", nav_about: "Hakkımızda", btn_contact: "İletişim", hero_title_1: "İle", hero_title_2: "Geleceğe Yolculuk Edin", hero_desc: "SK Team programlama grubu, akıllı botlar ve özel web siteleri tasarlayarak işinizin büyümesini hızlandırır.", btn_view_bots: "Botları Gör", trust_1_title: "Anında Teslimat", trust_1_desc: "Botlar satın alımdan hemen sonra aktif edilir.", trust_2_title: "Yüksek Güvenlik", trust_2_desc: "Grubunuz ve hesabınız için tam koruma.", trust_3_title: "7/24 Destek", trust_3_desc: "Ekibimiz size yardımcı olmak için her zaman hazır.", section_bots_title: "SK Team Akıllı Botları", section_bots_desc: "Tam ayrıntıları görmek için her bota tıklayın.", section_services_title: "Özel Hizmetlerimiz", section_services_desc: "Ayrıntıları görmek için her hizmete tıklayın.", srv_1_title: "Mesajlaşma Botları", srv_1_desc: "İhtiyaçlarınıza göre Telegram, Eitaa, Bale ve Rubika için botlar tasarlıyor ve inşa ediyoruz.", srv_2_title: "Web Tasarımı", srv_2_desc: "En yüksek kalitede kurumsal, e-ticaret ve kişisel web siteleri tasarlıyoruz.", srv_3_title: "Sosyal Medya Yönetimi", srv_3_desc: "Akıllı asistan botları ile işinizi yönetin ve büyütün.", section_about_title: "SK Team Hakkında", section_about_desc: "SK Team, siber uzayda işletmeleri güçlendirmek için kurulmuş uzman ve yaratıcı programcılardan oluşur. Akıllı botlar ve otomasyonlarla sosyal ağlarınızı büyütmek ve kolayca yönetmek için araçlar sunuyoruz. Uzmanlığımız size özel botlar yapmaktır.", footer_rights: "Tüm hakları SK Team'e aittir. © 2024", footer_contact_title: "İletişim", btn_support: "Telegram Desteği", btn_channel: "Telegram Kanalı", btn_email: "Ekip E-postası", btn_vcard: "Dijital Kart", btn_back: "Ana Sayfaya Dön", btn_buy_telegram: "Fiyat Gör ve Telegram'da Satın Al", section_features: "Özellikler", btn_order_telegram: "Telegram'da Sipariş Ver ve Danış", qr_modal_title: "Dijital Kartvizit", qr_modal_desc: "İletişim bilgilerimizi almak için bu barkodu telefonunuzun kamerasıyla tarayın." }
         };
 
-        // Language Change Function
         function changeLanguage(lang) {
-            // Set HTML lang and dir
             document.documentElement.lang = lang;
-            if(lang === 'fa' || lang === 'ar') {
-                document.documentElement.dir = 'rtl';
-            } else {
-                document.documentElement.dir = 'ltr';
-            }
+            document.documentElement.dir = (lang === 'fa' || lang === 'ar') ? 'rtl' : 'ltr';
 
-            // Sync both desktop and mobile selects
-            const selects = document.querySelectorAll('select');
-            selects.forEach(select => select.value = lang);
+            document.querySelectorAll('select').forEach(select => select.value = lang);
 
-            // Translate all elements with data-i18n attribute
-            const elementsToTranslate = document.querySelectorAll('[data-i18n]');
-            elementsToTranslate.forEach(el => {
+            document.querySelectorAll('[data-i18n]').forEach(el => {
                 const key = el.getAttribute('data-i18n');
                 if(translations[lang] && translations[lang][key]) {
                     el.innerHTML = translations[lang][key];
                 }
             });
-            
-            // Save preference
             localStorage.setItem('skteam_lang', lang);
         }
 
-        // Initialize Language
         window.addEventListener('DOMContentLoaded', () => {
             const savedLang = localStorage.getItem('skteam_lang') || 'fa';
             changeLanguage(savedLang);
         });
 
-        // Mobile Menu Logic
         function toggleMobileMenu() {
             const menu = document.getElementById('mobile-menu');
             menu.classList.toggle('hidden');
@@ -465,46 +366,56 @@
         }
         setInterval(drawBgMatrix, 50);
 
-        // Center Particles
+        // Center Particles (Ring Formation)
         const centerCanvas = document.getElementById('center-canvas');
         const centerCtx = centerCanvas.getContext('2d');
         centerCanvas.width = window.innerWidth;
         centerCanvas.height = window.innerHeight;
+        
         const isMobile = window.innerWidth < 768;
         let centerParticles = [];
         let phase = 'rain'; 
+        
         const centerX = centerCanvas.width / 2;
         const centerY = centerCanvas.height / 2;
-        const targetRadius = isMobile ? 85 : 170; 
-        const particleCount = isMobile ? 200 : 400; 
+        
+        // Logo is 150px on mobile, so radius 85 creates a tight ring around it. 
+        const targetRadius = isMobile ? 85 : 160; 
+        const particleCount = isMobile ? 200 : 350; 
 
         for (let i = 0; i < particleCount; i++) {
             centerParticles.push({
-                x: centerX + (Math.random() - 0.5) * (targetRadius * 2.5), 
+                x: centerX + (Math.random() - 0.5) * 80, 
                 y: Math.random() * -centerCanvas.height,
-                speed: Math.random() * 10 + 10,
-                targetAngle: Math.random() * Math.PI * 2, 
+                speed: Math.random() * 1 + 0.5, // MUCH SLOWER
+                // Distribute targets evenly around the circle starting from the bottom (Math.PI/2)
+                targetAngle: (Math.PI / 2) + (i / particleCount) * (Math.PI * 2),
                 char: bgLetters.charAt(Math.floor(Math.random() * bgLetters.length))
             });
         }
+
         function animateCenter() {
             centerCtx.clearRect(0, 0, centerCanvas.width, centerCanvas.height);
             centerCtx.shadowBlur = 10;
             centerCtx.shadowColor = '#3b82f6';
             centerCtx.fillStyle = '#60a5fa'; 
-            centerCtx.font = (isMobile ? '14px' : '18px') + ' monospace';
+            centerCtx.font = (isMobile ? '12px' : '16px') + ' monospace';
+
             centerParticles.forEach(p => {
                 if (phase === 'rain') {
                     p.y += p.speed;
                     if (p.y > centerCanvas.height) p.y = -20;
                 } else if (phase === 'form_ring') {
+                    // Calculate their exact spot on the ring
                     const targetX = centerX + Math.cos(p.targetAngle) * targetRadius;
                     const targetY = centerY + Math.sin(p.targetAngle) * targetRadius;
-                    p.x += (targetX - p.x) * 0.08;
-                    p.y += (targetY - p.y) * 0.08;
-                    p.targetAngle += 0.01;
+                    
+                    // Glide to the target
+                    p.x += (targetX - p.x) * 0.04;
+                    p.y += (targetY - p.y) * 0.04;
                 } else if (phase === 'hold') {
-                    p.targetAngle += 0.02;
+                    // Gently rotate the completed ring
+                    p.targetAngle += 0.005;
                     p.x = centerX + Math.cos(p.targetAngle) * targetRadius;
                     p.y = centerY + Math.sin(p.targetAngle) * targetRadius;
                 } else if (phase === 'disperse') {
@@ -524,11 +435,18 @@
             const mainContent = document.getElementById('main-content');
             const homeView = document.getElementById('home-view');
 
+            // t=0s to 4s: Gentle rain.
+
+            // t=4s: Start filling the ring (gliding to their circular targets)
             setTimeout(() => { phase = 'form_ring'; }, 4000);
+
+            // t=8s: Ring is full. Start fading in the logo (CSS handles the slow fade).
             setTimeout(() => {
                 phase = 'hold';
                 mainLogo.classList.add('show'); 
             }, 8000);
+
+            // t=13s: Disperse and shrink to corner
             setTimeout(() => {
                 phase = 'disperse';
                 splashScreen.classList.add('shrink-to-corner');
@@ -555,7 +473,7 @@
         function openQRModal() { document.getElementById('qr-modal').classList.add('active'); }
         function closeQRModal() { document.getElementById('qr-modal').classList.remove('active'); }
 
-        // Bots Data (Descriptions remain Persian for now)
+        // Bots Data
         const botsData = {
             'music-player': { title: 'ربات موزیک پلیر', image: 'robot_headphones_transparent.png', shortDesc: 'پخش و دانلود آنلاین موزیک با کیفیت ۳۲۰، همراه با ۴۰ اسکین اختصاصی و اکولایزرهای حرفه‌ای.', features: ['🎧 پخش و دانلود: پخش آنلاین و قابلیت دانلود فایل‌ها با کیفیت عالی ۳۲۰ کیلوبیت بر ثانیه.', '🌐 پشتیبانی از سایت‌های معروف: دریافت و پخش مستقیم از یوتیوب، ساندکلود و چندین پلتفرم دیگر.', '🎨 شخصی‌سازی کامل (۴۰+ اسکین): بیش از ۴۰ قالب ظاهری (اسکین) که مالک گروه می‌تواند تغییر دهد.', '🎛 اکولایزر حرفه‌ای (۲۰+ حالت): نزدیک به ۲۰ حالت اکولایزر و قابلیت تنظیم سرعت پخش موزیک.', '📂 آرشیو هوشمند: آرشیو کامل و منظم تمامی فایل‌های پخش شده برای دسترسی آسان.'] },
             'video-player': { title: 'ربات ویدیو پلیر', image: 'logo_video_player.png', shortDesc: 'پخش آنلاین شبکه‌های تلویزیونی، ماهواره‌ای و فایل‌های تصویری به صورت مستقیم در گروه.', features: ['📺 پخش زنده تلویزیون: پخش آنلاین شبکه‌های ماهواره‌ای و داخلی.', '🎬 پخش فایل‌های ویدیویی: پخش ویدیوهای ارسالی در گروه با بالاترین کیفیت.', '🚀 سرعت بالا: استریم بدون لگ و روان برای گروه‌های پرجمعیت.'] },

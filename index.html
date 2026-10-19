@@ -9,8 +9,8 @@
     <style>
         body { font-family: Vazir, sans-serif; background-color: #0a0c10; color: white; overflow-x: hidden; margin: 0; }
         
-        /* Matrix Canvas */
-        #matrix-canvas {
+        /* Background Matrix (Slow) */
+        #bg-canvas {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
             z-index: 0;
@@ -26,18 +26,38 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            transition: all 2s cubic-bezier(0.25, 1, 0.5, 1); /* Slower transition (2s) */
+            transition: all 2s cubic-bezier(0.25, 1, 0.5, 1); 
             transform-origin: top right; 
         }
         
         #splash-screen.shrink-to-corner {
-            transform: translate(40vw, -40vh) scale(0.15); 
+            transform: translate(42vw, -42vh) scale(0.12); 
             opacity: 0;
         }
 
-        #logo-canvas {
+        /* Center Fast Particles */
+        #center-canvas {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 1;
+        }
+
+        /* The Actual Logo Image */
+        #main-splash-logo {
+            position: absolute;
+            width: 280px;
+            height: 280px;
+            object-fit: contain;
+            z-index: 2;
+            opacity: 0;
+            transform: scale(0.8);
+            filter: drop-shadow(0 0 30px rgba(59,130,246,0.8));
+            transition: opacity 2s ease, transform 2s ease;
+        }
+        
+        #main-splash-logo.show {
+            opacity: 1;
+            transform: scale(1);
         }
 
         /* Main Content */
@@ -50,7 +70,7 @@
         }
         #main-content.show { opacity: 1; visibility: visible; }
 
-        /* Neon & Animation Effects */
+        /* Other Styles */
         .neon-text { text-shadow: 0 0 10px rgba(59,130,246,0.5); }
         .neon-box { box-shadow: 0 0 20px rgba(37,99,235,0.1); transition: all 0.3s ease; }
         .neon-box:hover { box-shadow: 0 0 30px rgba(37,99,235,0.4); transform: translateY(-5px); border-color: #3b82f6; }
@@ -62,7 +82,6 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         .bot-card:active { transform: scale(0.96) !important; transition: transform 0.1s; }
 
-        /* Modal Styles */
         .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(10, 12, 16, 0.9); backdrop-filter: blur(5px); z-index: 1000; display: flex; justify-content: center; align-items: center; opacity: 0; visibility: hidden; transition: all 0.3s ease; }
         .modal.active { opacity: 1; visibility: visible; }
         .modal-content { background: #1e2329; border: 1px solid #3b82f6; box-shadow: 0 0 30px rgba(59,130,246,0.3); width: 90%; max-width: 600px; border-radius: 1rem; padding: 2rem; transform: scale(0.9); transition: transform 0.3s ease; max-height: 90vh; overflow-y: auto; }
@@ -71,18 +90,20 @@
 </head>
 <body class="min-h-screen flex flex-col relative">
 
-    <!-- Background Matrix Canvas -->
-    <canvas id="matrix-canvas"></canvas>
+    <!-- Background Matrix (Slow) -->
+    <canvas id="bg-canvas"></canvas>
 
-    <!-- Splash Screen with Particle Morphing -->
+    <!-- Splash Screen -->
     <div id="splash-screen">
-        <canvas id="logo-canvas"></canvas>
+        <!-- Center Fast Particles -->
+        <canvas id="center-canvas"></canvas>
+        <!-- The Real Logo -->
+        <img id="main-splash-logo" src="skteam_ring_transparent.png" alt="SK Team Logo">
     </div>
 
     <!-- Main Website Content -->
     <div id="main-content" class="flex-grow flex flex-col min-h-screen">
         
-        <!-- Header -->
         <header class="bg-[#0f1218]/90 backdrop-blur-md border-b border-gray-800 sticky top-0 z-40">
             <div class="max-w-7xl mx-auto px-4 h-20 flex items-center justify-between">
                 <a href="#" onclick="showHome()" class="flex items-center gap-3">
@@ -99,13 +120,9 @@
             </div>
         </header>
 
-        <!-- Main Content Area -->
         <main class="flex-grow">
-            
             <!-- ================= HOME VIEW ================= -->
             <div id="home-view" class="hide fade-in">
-                
-                <!-- Hero Section -->
                 <section class="max-w-7xl mx-auto px-4 py-20 flex flex-col md:flex-row items-center justify-between gap-12">
                     <div class="flex-1 text-center md:text-right">
                         <h1 class="text-5xl md:text-6xl font-extrabold leading-tight mb-6">
@@ -124,7 +141,6 @@
                     </div>
                 </section>
 
-                <!-- Trust Section -->
                 <section class="max-w-7xl mx-auto px-4 py-10 border-t border-gray-800">
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
                         <div class="bg-[#15191e] p-6 rounded-2xl border border-gray-800">
@@ -145,7 +161,6 @@
                     </div>
                 </section>
 
-                <!-- Bots Section -->
                 <section id="bots" class="max-w-7xl mx-auto px-4 py-16 border-t border-gray-800">
                     <div class="text-center mb-12">
                         <h2 class="text-4xl font-bold mb-4">ربات‌های هوشمند SK Team</h2>
@@ -154,7 +169,6 @@
                     <div id="bots-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
                 </section>
 
-                <!-- Services Section -->
                 <section id="services" class="max-w-7xl mx-auto px-4 py-16 border-t border-gray-800">
                     <div class="text-center mb-12">
                         <h2 class="text-4xl font-bold mb-4">خدمات تخصصی ما</h2>
@@ -176,7 +190,6 @@
                     </div>
                 </section>
 
-                <!-- About Us -->
                 <section id="about" class="max-w-4xl mx-auto px-4 py-16 border-t border-gray-800 text-center">
                     <h2 class="text-4xl font-bold mb-6">درباره <span class="text-blue-500">SK Team</span></h2>
                     <p class="text-gray-300 text-lg leading-relaxed">
@@ -212,10 +225,8 @@
                     </div>
                 </div>
             </div>
-
         </main>
 
-        <!-- Footer -->
         <footer id="contact" class="bg-[#0f1218] border-t border-gray-800 py-12 mt-10 relative z-10">
             <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-8">
                 <div class="text-center md:text-right flex flex-col items-center md:items-start">
@@ -275,8 +286,8 @@
     </div>
 
     <script>
-        // ================= BACKGROUND MATRIX RAIN =================
-        const bgCanvas = document.getElementById('matrix-canvas');
+        // ================= BACKGROUND MATRIX (SLOW) =================
+        const bgCanvas = document.getElementById('bg-canvas');
         const bgCtx = bgCanvas.getContext('2d');
         bgCanvas.width = window.innerWidth;
         bgCanvas.height = window.innerHeight;
@@ -286,186 +297,142 @@
         const bgColumns = bgCanvas.width / bgFontSize;
         const bgDrops = [];
         for (let x = 0; x < bgColumns; x++) {
-            bgDrops[x] = { y: Math.random() * -100, speed: Math.random() * 0.3 + 0.2 }; // Slower base speed
+            bgDrops[x] = { y: Math.random() * -100, speed: Math.random() * 0.2 + 0.1 };
         }
 
         function drawBgMatrix() {
             bgCtx.fillStyle = 'rgba(10, 12, 16, 0.1)';
             bgCtx.fillRect(0, 0, bgCanvas.width, bgCanvas.height);
-            bgCtx.fillStyle = '#3b82f6'; 
+            bgCtx.fillStyle = 'rgba(59, 130, 246, 0.4)'; // Fainter blue for background
             bgCtx.font = bgFontSize + 'px monospace';
             
             for (let i = 0; i < bgDrops.length; i++) {
                 const text = bgLetters.charAt(Math.floor(Math.random() * bgLetters.length));
                 bgCtx.fillText(text, i * bgFontSize, bgDrops[i].y * bgFontSize);
                 
-                let currentSpeed = bgDrops[i].speed;
-                if (Math.random() > 0.99) currentSpeed += 1.5; // Slower droplet effect
-
-                bgDrops[i].y += currentSpeed;
+                bgDrops[i].y += bgDrops[i].speed;
                 
                 if (bgDrops[i].y * bgFontSize > bgCanvas.height && Math.random() > 0.98) {
                     bgDrops[i].y = 0;
-                    bgDrops[i].speed = Math.random() * 0.3 + 0.2; 
+                    bgDrops[i].speed = Math.random() * 0.2 + 0.1; 
                 }
             }
         }
         setInterval(drawBgMatrix, 50);
 
-        // ================= SPLASH LOGO PARTICLE MORPHING =================
-        const logoCanvas = document.getElementById('logo-canvas');
-        const logoCtx = logoCanvas.getContext('2d');
-        logoCanvas.width = window.innerWidth;
-        logoCanvas.height = window.innerHeight;
+        // ================= CENTER FAST PARTICLES (VORTEX) =================
+        const centerCanvas = document.getElementById('center-canvas');
+        const centerCtx = centerCanvas.getContext('2d');
+        centerCanvas.width = window.innerWidth;
+        centerCanvas.height = window.innerHeight;
 
-        let particles = [];
-        let targets = [];
-        let phase = 'rain'; 
+        let centerParticles = [];
+        let phase = 'rain'; // rain, vortex, disperse
+        const centerX = centerCanvas.width / 2;
+        const centerY = centerCanvas.height / 2;
+        const logoRadius = Math.min(centerCanvas.width, centerCanvas.height) * 0.25; // Radius of the logo area
 
-        const img = new Image();
-        img.src = 'skteam_ring_transparent.png'; 
-        img.onload = () => {
-            const offCanvas = document.createElement('canvas');
-            const offCtx = offCanvas.getContext('2d');
-            
-            const scale = Math.min(logoCanvas.width, logoCanvas.height) * 0.5 / img.width; 
-            const imgWidth = img.width * scale;
-            const imgHeight = img.height * scale;
-            offCanvas.width = imgWidth;
-            offCanvas.height = imgHeight;
-            
-            offCtx.drawImage(img, 0, 0, imgWidth, imgHeight);
-            const imageData = offCtx.getImageData(0, 0, imgWidth, imgHeight).data;
-            
-            const offsetX = (logoCanvas.width - imgWidth) / 2;
-            const offsetY = (logoCanvas.height - imgHeight) / 2;
-
-            const step = 4; 
-            for (let y = 0; y < imgHeight; y += step) {
-                for (let x = 0; x < imgWidth; x += step) {
-                    const alpha = imageData[(y * imgWidth + x) * 4 + 3];
-                    if (alpha > 128) { 
-                        targets.push({ x: x + offsetX, y: y + offsetY });
-                    }
-                }
-            }
-            
-            const particlesCount = targets.length;
-            for (let i = 0; i < particlesCount; i++) {
-                particles.push({
-                    x: Math.random() * logoCanvas.width, 
-                    y: Math.random() * -logoCanvas.height, 
-                    targetX: targets[i].x,
-                    targetY: targets[i].y,
-                    speed: Math.random() * 1.5 + 1, // Slower fall speed
-                    char: bgLetters.charAt(Math.floor(Math.random() * bgLetters.length))
-                });
-            }
-            animateLogo();
-        };
-
-        function animateLogo() {
-            if (!logoCtx) return;
-            logoCtx.clearRect(0, 0, logoCanvas.width, logoCanvas.height);
-            
-            logoCtx.shadowBlur = 10;
-            logoCtx.shadowColor = '#3b82f6';
-            logoCtx.fillStyle = '#60a5fa'; 
-            logoCtx.font = '12px monospace';
-
-            particles.forEach((p, i) => {
-                if (phase === 'rain') {
-                    p.y += p.speed;
-                    if (p.y > logoCanvas.height) p.y = -20;
-                } else if (phase === 'morph') {
-                    // Slower morphing factor (0.015 instead of 0.05) for a more cinematic movement
-                    p.x += (p.targetX - p.x) * 0.015;
-                    p.y += (p.targetY - p.y) * 0.015;
-                } else if (phase === 'hold') {
-                    p.x = p.targetX + (Math.random() - 0.5) * 2;
-                    p.y = p.targetY + (Math.random() - 0.5) * 2;
-                }
-                logoCtx.fillText(p.char, p.x, p.y);
+        // Initialize center particles
+        for (let i = 0; i < 300; i++) {
+            centerParticles.push({
+                x: centerX + (Math.random() - 0.5) * 400,
+                y: Math.random() * -centerCanvas.height,
+                speed: Math.random() * 8 + 5, // Fast falling
+                angle: Math.random() * Math.PI * 2,
+                radius: logoRadius + (Math.random() - 0.5) * 50,
+                char: bgLetters.charAt(Math.floor(Math.random() * bgLetters.length))
             });
-
-            requestAnimationFrame(animateLogo);
         }
 
-        // ================= 10-SECOND TIMELINE =================
+        function animateCenter() {
+            centerCtx.clearRect(0, 0, centerCanvas.width, centerCanvas.height);
+            centerCtx.shadowBlur = 10;
+            centerCtx.shadowColor = '#3b82f6';
+            centerCtx.fillStyle = '#60a5fa';
+            centerCtx.font = '14px monospace';
+
+            centerParticles.forEach(p => {
+                if (phase === 'rain') {
+                    p.y += p.speed;
+                    if (p.y > centerCanvas.height) p.y = -20;
+                } else if (phase === 'vortex') {
+                    // Suck them into the logo center to form a swirling ring
+                    p.angle += 0.05; // Rotation speed
+                    p.radius += (logoRadius - p.radius) * 0.05; // Pull towards target radius
+                    
+                    // Move towards center Y and X
+                    p.x += (centerX + Math.cos(p.angle) * p.radius - p.x) * 0.05;
+                    p.y += (centerY + Math.sin(p.angle) * p.radius - p.y) * 0.05;
+                } else if (phase === 'disperse') {
+                    // Explode outwards slightly
+                    p.x += (p.x - centerX) * 0.02;
+                    p.y += (p.y - centerY) * 0.02;
+                }
+                centerCtx.fillText(p.char, p.x, p.y);
+            });
+            requestAnimationFrame(animateCenter);
+        }
+        animateCenter();
+
+        // ================= 15-SECOND TIMELINE =================
         window.addEventListener('DOMContentLoaded', () => {
             const splashScreen = document.getElementById('splash-screen');
+            const mainLogo = document.getElementById('main-splash-logo');
             const mainContent = document.getElementById('main-content');
             const homeView = document.getElementById('home-view');
 
-            // t=0s: Rain starts immediately.
-
-            // t=4s: Start Morphing to Logo shape (Takes time due to slower easing)
+            // t=0s to 4s: Background rain + center fast rain.
+            
+            // t=4s: Start Vortex (Particles swirl to form the logo shape)
             setTimeout(() => {
-                phase = 'morph';
+                phase = 'vortex';
             }, 4000);
 
-            // t=7.5s: Lock particles into Logo shape
+            // t=9s: Bring in the high-res Logo Image over the vortex
             setTimeout(() => {
-                phase = 'hold';
-            }, 7500);
+                mainLogo.classList.add('show');
+            }, 9000);
 
-            // t=9s: Shrink logo to corner and show main site
+            // t=12s: Prepare to leave (disperse particles)
+            setTimeout(() => {
+                phase = 'disperse';
+            }, 12000);
+
+            // t=13s: Shrink logo to corner and show main site
             setTimeout(() => {
                 splashScreen.classList.add('shrink-to-corner');
                 mainContent.classList.add('show');
                 homeView.classList.remove('hide');
                 
-                // Remove splash screen completely after 2s transition
+                // Remove splash screen completely after transition
                 setTimeout(() => {
                     splashScreen.style.display = 'none';
                 }, 2000);
 
-            }, 9000); // At 9 seconds, start moving to corner (takes 2s to finish, totaling 11s of animation)
+            }, 13000); 
         });
 
+        // Resize handler
         window.addEventListener('resize', () => {
             bgCanvas.width = window.innerWidth;
             bgCanvas.height = window.innerHeight;
-            logoCanvas.width = window.innerWidth;
-            logoCanvas.height = window.innerHeight;
+            centerCanvas.width = window.innerWidth;
+            centerCanvas.height = window.innerHeight;
         });
 
         // ================= SERVICE MODALS =================
         const serviceData = {
             'messenger': {
                 title: 'ربات‌های پیام‌رسان',
-                body: `
-                    <p>ما ربات‌های اختصاصی برای پلتفرم‌های مختلف از جمله <strong>تلگرام، ایتا، بله و روبیکا</strong> طراحی می‌کنیم.</p>
-                    <ul class="list-disc list-inside space-y-2 mt-3 text-gray-400">
-                        <li>ربات‌های فروشگاهی و فروش خودکار</li>
-                        <li>ربات‌های منشی و پاسخگوی خودکار</li>
-                        <li>ربات‌های مدیریت گروه و کانال</li>
-                        <li>ربات‌های سرگرمی و بازی</li>
-                    </ul>
-                `
+                body: `<p>ما ربات‌های اختصاصی برای پلتفرم‌های مختلف از جمله <strong>تلگرام، ایتا، بله و روبیکا</strong> طراحی می‌کنیم.</p><ul class="list-disc list-inside space-y-2 mt-3 text-gray-400"><li>ربات‌های فروشگاهی و فروش خودکار</li><li>ربات‌های منشی و پاسخگوی خودکار</li><li>ربات‌های مدیریت گروه و کانال</li><li>ربات‌های سرگرمی و بازی</li></ul>`
             },
             'web': {
                 title: 'طراحی وب‌سایت',
-                body: `
-                    <p>تیم ما انواع مختلفی از وب‌سایت‌ها را با بالاترین کیفیت و تکنولوژی‌های روز دنیا طراحی می‌کند:</p>
-                    <ul class="list-disc list-inside space-y-2 mt-3 text-gray-400">
-                        <li><strong>انواع سایت‌ها:</strong> شرکتی، فروشگاهی، شخصی، پرتفولیو و وبلاگ.</li>
-                        <li><strong>سایت با سرور (Server):</strong> مناسب برای سایت‌هایی که نیاز به دیتابیس، پنل مدیریت و پردازش‌های پیچیده دارند.</li>
-                        <li><strong>سایت بدون سرور (Serverless):</strong> مناسب برای سایت‌های سریع، امن و استاتیک. هزینه نگهداری بسیار پایین و سرعت لود فوق‌العاده.</li>
-                    </ul>
-                `
+                body: `<p>تیم ما انواع مختلفی از وب‌سایت‌ها را با بالاترین کیفیت و تکنولوژی‌های روز دنیا طراحی می‌کند:</p><ul class="list-disc list-inside space-y-2 mt-3 text-gray-400"><li><strong>انواع سایت‌ها:</strong> شرکتی، فروشگاهی، شخصی، پرتفولیو و وبلاگ.</li><li><strong>سایت با سرور (Server):</strong> مناسب برای سایت‌هایی که نیاز به دیتابیس، پنل مدیریت و پردازش‌های پیچیده دارند.</li><li><strong>سایت بدون سرور (Serverless):</strong> مناسب برای سایت‌های سریع، امن و استاتیک. هزینه نگهداری بسیار پایین و سرعت لود فوق‌العاده.</li></ul>`
             },
             'social': {
                 title: 'مدیریت شبکه‌های مجازی',
-                body: `
-                    <p>ما با استفاده از اتوماسیون و ربات‌های هوشمند، به رشد و رونق کسب و کار شما در شبکه‌های اجتماعی کمک می‌کنیم.</p>
-                    <ul class="list-disc list-inside space-y-2 mt-3 text-gray-400">
-                        <li>مدیریت و رونق گروه‌ها و کانال‌ها</li>
-                        <li>راه‌اندازی ربات‌های منشی هوشمند برای پاسخگویی ۲۴ ساعته</li>
-                        <li>مدیریت کمپین‌های تبلیغاتی و جذب ممبر</li>
-                        <li>افزایش تعامل و فعالیت در صفحات مجازی شما</li>
-                    </ul>
-                `
+                body: `<p>ما با استفاده از اتوماسیون و ربات‌های هوشمند، به رشد و رونق کسب و کار شما در شبکه‌های اجتماعی کمک می‌کنیم.</p><ul class="list-disc list-inside space-y-2 mt-3 text-gray-400"><li>مدیریت و رونق گروه‌ها و کانال‌ها</li><li>راه‌اندازی ربات‌های منشی هوشمند برای پاسخگویی ۲۴ ساعته</li><li>مدیریت کمپین‌های تبلیغاتی و جذب ممبر</li><li>افزایش تعامل و فعالیت در صفحات مجازی شما</li></ul>`
             }
         };
 
@@ -492,82 +459,28 @@
         // ================= BOTS DATA & RENDER =================
         const botsData = {
             'music-player': {
-                title: 'ربات موزیک پلیر',
-                image: 'robot_headphones_transparent.png',
-                shortDesc: 'پخش و دانلود آنلاین موزیک با کیفیت ۳۲۰، همراه با ۴۰ اسکین اختصاصی و اکولایزرهای حرفه‌ای.',
-                features: [
-                    '🎧 پخش و دانلود: پخش آنلاین و قابلیت دانلود فایل‌ها با کیفیت عالی ۳۲۰ کیلوبیت بر ثانیه.',
-                    '🌐 پشتیبانی از سایت‌های معروف: دریافت و پخش مستقیم از یوتیوب، ساندکلود و چندین پلتفرم دیگر.',
-                    '🎨 شخصی‌سازی کامل (۴۰+ اسکین): بیش از ۴۰ قالب ظاهری (اسکین) که مالک گروه می‌تواند تغییر دهد.',
-                    '🎛 اکولایزر حرفه‌ای (۲۰+ حالت): نزدیک به ۲۰ حالت اکولایزر و قابلیت تنظیم سرعت پخش موزیک.',
-                    '📂 آرشیو هوشمند: آرشیو کامل و منظم تمامی فایل‌های پخش شده برای دسترسی آسان.'
-                ]
+                title: 'ربات موزیک پلیر', image: 'robot_headphones_transparent.png', shortDesc: 'پخش و دانلود آنلاین موزیک با کیفیت ۳۲۰، همراه با ۴۰ اسکین اختصاصی و اکولایزرهای حرفه‌ای.',
+                features: ['🎧 پخش و دانلود: پخش آنلاین و قابلیت دانلود فایل‌ها با کیفیت عالی ۳۲۰ کیلوبیت بر ثانیه.', '🌐 پشتیبانی از سایت‌های معروف: دریافت و پخش مستقیم از یوتیوب، ساندکلود و چندین پلتفرم دیگر.', '🎨 شخصی‌سازی کامل (۴۰+ اسکین): بیش از ۴۰ قالب ظاهری (اسکین) که مالک گروه می‌تواند تغییر دهد.', '🎛 اکولایزر حرفه‌ای (۲۰+ حالت): نزدیک به ۲۰ حالت اکولایزر و قابلیت تنظیم سرعت پخش موزیک.', '📂 آرشیو هوشمند: آرشیو کامل و منظم تمامی فایل‌های پخش شده برای دسترسی آسان.']
             },
             'video-player': {
-                title: 'ربات ویدیو پلیر',
-                image: 'logo_video_player.png',
-                shortDesc: 'پخش آنلاین شبکه‌های تلویزیونی، ماهواره‌ای و فایل‌های تصویری به صورت مستقیم در گروه.',
-                features: [
-                    '📺 پخش زنده تلویزیون: پخش آنلاین شبکه‌های ماهواره‌ای و داخلی.',
-                    '🎬 پخش فایل‌های ویدیویی: پخش ویدیوهای ارسالی در گروه با بالاترین کیفیت.',
-                    '🚀 سرعت بالا: استریم بدون لگ و روان برای گروه‌های پرجمعیت.'
-                ]
+                title: 'ربات ویدیو پلیر', image: 'logo_video_player.png', shortDesc: 'پخش آنلاین شبکه‌های تلویزیونی، ماهواره‌ای و فایل‌های تصویری به صورت مستقیم در گروه.',
+                features: ['📺 پخش زنده تلویزیون: پخش آنلاین شبکه‌های ماهواره‌ای و داخلی.', '🎬 پخش فایل‌های ویدیویی: پخش ویدیوهای ارسالی در گروه با بالاترین کیفیت.', '🚀 سرعت بالا: استریم بدون لگ و روان برای گروه‌های پرجمعیت.']
             },
             'group-manager': {
-                title: 'ربات مدیریت گروه (Ultimate)',
-                image: 'logo_white2_transparent.png',
-                shortDesc: 'کامل‌ترین سیستم‌عامل مدیریت گروه؛ مجهز به هوش مصنوعی، سیستم اشتراک، فیلتر NSFW، ربات موزیک و ده‌ها قابلیت امنیتی!',
-                features: [
-                    '🔐 امنیت و مدیریت: سیستم کامل اخطار، بن، سکوت، قفل‌های پیشرفته (رسانه، لینک)، ضد رگبار و ضد رید.',
-                    '🤖 هوش مصنوعی (AI): پاسخگویی خودکار به پیام‌ها با قابلیت تنظیم شخصیت.',
-                    '💎 سیستم اشتراک: فروش اشتراک (مدیریت، موزیک، رکورد، NSFW) با تعرفه ۱ تا ۱۲ ماهه.',
-                    '🎵 ربات‌های همراه: مجهز به موزیک‌پلیر (یوتیوب/ساندکلود) و رکوردر ویس‌کال.',
-                    '🎮 سرگرمی: مجموعه کامل بازی‌ها (مافیا، جرات و حقیقت، تاس)، ۱۰۰ معما، ۱۰۰ جوک و فال حافظ.',
-                    '📢 لاگ و گزارش: کانال لاگ اختصاصی برای ثبت تمام وقایع و گزارش‌های روزانه به پیوی مالک.',
-                    '⚙️ پنل‌های مدیریتی: پنل سازنده، پنل مالک گروه و پنل سیستم.'
-                ]
+                title: 'ربات مدیریت گروه (Ultimate)', image: 'logo_white2_transparent.png', shortDesc: 'کامل‌ترین سیستم‌عامل مدیریت گروه؛ مجهز به هوش مصنوعی، سیستم اشتراک، فیلتر NSFW، ربات موزیک و ده‌ها قابلیت امنیتی!',
+                features: ['🔐 امنیت و مدیریت: سیستم کامل اخطار، بن، سکوت، قفل‌های پیشرفته (رسانه، لینک)، ضد رگبار و ضد رید.', '🤖 هوش مصنوعی (AI): پاسخگویی خودکار به پیام‌ها با قابلیت تنظیم شخصیت.', '💎 سیستم اشتراک: فروش اشتراک (مدیریت، موزیک، رکورد، NSFW) با تعرفه ۱ تا ۱۲ ماهه.', '🎵 ربات‌های همراه: مجهز به موزیک‌پلیر (یوتیوب/ساندکلود) و رکوردر ویس‌کال.', '🎮 سرگرمی: مجموعه کامل بازی‌ها (مافیا، جرات و حقیقت، تاس)، ۱۰۰ معما، ۱۰۰ جوک و فال حافظ.', '📢 لاگ و گزارش: کانال لاگ اختصاصی برای ثبت تمام وقایع و گزارش‌های روزانه به پیوی مالک.', '⚙️ پنل‌های مدیریتی: پنل سازنده، پنل مالک گروه و پنل سیستم.']
             },
             'voice-recorder': {
-                title: 'ریکوردر ویس‌کال',
-                image: 'logo_voice_recorder_robot_mic_wave.png',
-                shortDesc: 'ضبط خودکار تمام مکالمات ویس‌کال با تنظیم بازه زمانی دلخواه و ارسال مستقیم به پیوی مدیر.',
-                features: [
-                    '🎧 ضبط کامل مکالمات: ربات به صورت خودکار وارد ویس‌کال شده و تمامی صحبت‌ها را ضبط می‌کند.',
-                    '⏱ تنظیم بازه زمانی (کلیپ‌بندی): قابلیت تنظیم مدت زمان هر کلیپ (مثلاً ۱، ۳، ۵، ۱۵ یا ۳۰ دقیقه) توسط مالک گروه.',
-                    '🎛 کنترل کامل در دست مدیر: مالک گروه می‌تواند ربات را در هر لحظه روشن یا خاموش کند.',
-                    '📥 ارسال امن به پیوی (PV): تمامی فایل‌های صوتی ضبط شده، به صورت مستقیم و امن به چت خصوصی مالک گروه ارسال می‌شوند.'
-                ]
+                title: 'ریکوردر ویس‌کال', image: 'logo_voice_recorder_robot_mic_wave.png', shortDesc: 'ضبط خودکار تمام مکالمات ویس‌کال با تنظیم بازه زمانی دلخواه و ارسال مستقیم به پیوی مدیر.',
+                features: ['🎧 ضبط کامل مکالمات: ربات به صورت خودکار وارد ویس‌کال شده و تمامی صحبت‌ها را ضبط می‌کند.', '⏱ تنظیم بازه زمانی (کلیپ‌بندی): قابلیت تنظیم مدت زمان هر کلیپ (مثلاً ۱، ۳، ۵، ۱۵ یا ۳۰ دقیقه) توسط مالک گروه.', '🎛 کنترل کامل در دست مدیر: مالک گروه می‌تواند ربات را در هر لحظه روشن یا خاموش کند.', '📥 ارسال امن به پیوی (PV): تمامی فایل‌های صوتی ضبط شده، به صورت مستقیم و امن به چت خصوصی مالک گروه ارسال می‌شوند.']
             },
             'content-guard': {
-                title: 'ربات گارد محتوا (فیلتر +18)',
-                image: 'logo_nsfw_robot_icon1.png',
-                shortDesc: 'فیلتر هوشمند محتوای نامناسب (+18) با ۳ سطح حساسیت، اخطار خودکار و سیستم تنبیه (سکوت/بن).',
-                features: [
-                    '🎚 ۳ سطح حساسیت هوشمند: دارای ۳ حالت تنظیم حساسیت (کم، متوسط، زیاد) برای تشخیص دقیق محتوای نامناسب.',
-                    '🖼 شناسایی انواع رسانه: هوش مصنوعی ربات تمامی عکس‌ها، فیلم‌ها، گیف‌ها و استیکرهای حاوی محتوای غیراخلاقی را شناسایی می‌کند.',
-                    '🗑 حذف خودکار و اخطار: پیام نامناسب فوراً از گروه حذف شده و به کاربر متخلف اخطار داده می‌شود.',
-                    '⚖️ سیستم تنبیه قابل تنظیم: مدیر گروه می‌تواند تعیین کند که پس از چند بار اخطار، شخص «سکوت»، «اخراج» یا «بن» شود.',
-                    '⚙️ مدیریت آسان: تمامی این تنظیمات از داخل پنل خود ربات توسط مالک گروه قابل شخصی‌سازی است.',
-                    '⚠️ توجه: این ربات به صورت اشتراک جداگانه ارائه می‌شود.'
-                ]
+                title: 'ربات گارد محتوا (فیلتر +18)', image: 'logo_nsfw_robot_icon1.png', shortDesc: 'فیلتر هوشمند محتوای نامناسب (+18) با ۳ سطح حساسیت، اخطار خودکار و سیستم تنبیه (سکوت/بن).',
+                features: ['🎚 ۳ سطح حساسیت هوشمند: دارای ۳ حالت تنظیم حساسیت (کم، متوسط، زیاد) برای تشخیص دقیق محتوای نامناسب.', '🖼 شناسایی انواع رسانه: هوش مصنوعی ربات تمامی عکس‌ها، فیلم‌ها، گیف‌ها و استیکرهای حاوی محتوای غیراخلاقی را شناسایی می‌کند.', '🗑 حذف خودکار و اخطار: پیام نامناسب فوراً از گروه حذف شده و به کاربر متخلف اخطار داده می‌شود.', '⚖️ سیستم تنبیه قابل تنظیم: مدیر گروه می‌تواند تعیین کند که پس از چند بار اخطار، شخص «سکوت»، «اخراج» یا «بن» شود.', '⚙️ مدیریت آسان: تمامی این تنظیمات از داخل پنل خود ربات توسط مالک گروه قابل شخصی‌سازی است.', '⚠️ توجه: این ربات به صورت اشتراک جداگانه ارائه می‌شود.']
             },
             'self-bot': {
-                title: 'ربات سلف (Self Bot)',
-                image: 'logo_watch_spy_robot.png',
-                shortDesc: 'رباتی که روی اکانت شخصی شما نصب می‌شود و امکانات پیشرفته‌ای مانند منشی هوشمند، ساعت بیو و پاسخ خودکار را ارائه می‌دهد.',
-                features: [
-                    '⚠️ نصب این ربات به معنی دسترسی آن به اکانت شما جهت انجام دستورات است.',
-                    '⛔️ گذاشتن ساعت با فونت‌های مختلف بر روی بیو و اسم.',
-                    '❈ قابلیت تنظیم حالت خوانده شدن خودکار پیام‌ها.',
-                    '⚙️ تنظیم حالت پاسخ خودکار و منشی هوشمند.',
-                    '✈️ جواب دادن به شخصی که به شما توهین می‌کند.',
-                    '⛈ پیام انیمیشنی و دو زبانه بودن دستورات.',
-                    '⚙️ دریافت پنل و تنظیمات اکانت هوشمند.',
-                    '⚙️ تغییر نام و کاور فایل‌ها.',
-                    '⚙️ اعلان پیام‌های ادیت و حذف شده در پیوی.',
-                    '⚙️ ذخیره پروفایل‌های جدید و اعلان حذف پروفایل مخاطبین.',
-                    '📖 (امکانات بسیار بیشتری پس از خرید در دسترس شما قرار می‌گیرد).'
-                ]
+                title: 'ربات سلف (Self Bot)', image: 'logo_watch_spy_robot.png', shortDesc: 'رباتی که روی اکانت شخصی شما نصب می‌شود و امکانات پیشرفته‌ای مانند منشی هوشمند، ساعت بیو و پاسخ خودکار را ارائه می‌دهد.',
+                features: ['⚠️ نصب این ربات به معنی دسترسی آن به اکانت شما جهت انجام دستورات است.', '⛔️ گذاشتن ساعت با فونت‌های مختلف بر روی بیو و اسم.', '❈ قابلیت تنظیم حالت خوانده شدن خودکار پیام‌ها.', '⚙️ تنظیم حالت پاسخ خودکار و منشی هوشمند.', '✈️ جواب دادن به شخصی که به شما توهین می‌کند.', '⛈ پیام انیمیشنی و دو زبانه بودن دستورات.', '⚙️ دریافت پنل و تنظیمات اکانت هوشمند.', '⚙️ تغییر نام و کاور فایل‌ها.', '⚙️ اعلان پیام‌های ادیت و حذف شده در پیوی.', '⚙️ ذخیره پروفایل‌های جدید و اعلان حذف پروفایل مخاطبین.', '📖 (امکانات بسیار بیشتری پس از خرید در دسترس شما قرار می‌گیرد).']
             }
         };
 
@@ -634,7 +547,6 @@
         });
     </script>
 
-    <!-- Knocket Chat Widget Script -->
     <script src="https://trtc.io/knocket-sdk/sdk.js?identifier=f672fb450563b86d8y=17924411579157" async></script>
 
 </body>

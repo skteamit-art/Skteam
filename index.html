@@ -3,89 +3,375 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SK Team | دنیای ربات‌های هوشمند</title>
+    <title>SK Team | توسعه ربات و اتوماسیون</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdn.fontcdn.ir/Font/Persian/Vazir/Vazir.css" rel="stylesheet" type="text/css" />
     <style>
-        body { font-family: Vazir, sans-serif; background-color: #0a0c10; color: white; }
+        body { font-family: Vazir, sans-serif; background-color: #0a0c10; color: white; overflow-x: hidden; }
+        
+        /* Neon Effects */
+        .neon-text { text-shadow: 0 0 10px rgba(59,130,246,0.5); }
+        .neon-box { box-shadow: 0 0 20px rgba(37,99,235,0.1); transition: all 0.3s ease; }
+        .neon-box:hover { box-shadow: 0 0 30px rgba(37,99,235,0.4); transform: translateY(-5px); border-color: #3b82f6; }
+        
+        /* Page Transitions */
+        .hide { display: none !important; }
+        .fade-in { animation: fadeIn 0.4s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Touch Click Effect */
+        .bot-card:active { transform: scale(0.96) !important; transition: transform 0.1s; }
+
+        /* Splash Screen Animation */
+        #splash-screen {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: #0a0c10;
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.8s ease;
+        }
+        #splash-logo {
+            width: 250px;
+            height: 250px;
+            object-fit: contain;
+            transition: all 1.2s cubic-bezier(0.25, 1, 0.5, 1);
+            filter: drop-shadow(0 0 30px rgba(59,130,246,0.5));
+        }
+        .logo-shrink {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            width: 50px !important;
+            height: 50px !important;
+            filter: drop-shadow(0 0 10px rgba(59,130,246,0.3)) !important;
+        }
     </style>
 </head>
-<body class="min-h-screen">
+<body class="min-h-screen flex flex-col">
+
+    <!-- Splash Screen -->
+    <div id="splash-screen">
+        <img id="splash-logo" src="skteam_logo.png" alt="SK Team Loading">
+    </div>
 
     <!-- Header -->
-    <header class="bg-[#0f1218]/90 backdrop-blur-md border-b border-gray-800 sticky top-0 z-50">
+    <header id="main-header" class="bg-[#0f1218]/90 backdrop-blur-md border-b border-gray-800 sticky top-0 z-50 opacity-0 transition-opacity duration-500">
         <div class="max-w-7xl mx-auto px-4 h-20 flex items-center justify-between">
-            <a href="#" class="flex items-center gap-3">
-                <!-- استفاده از لوگوی سفید برای هدر -->
-                <img src="logo_white.png" alt="SK Team Logo" class="w-12 h-12 object-contain" />
+            <a href="#" onclick="showHome()" class="flex items-center gap-3">
+                <img src="skteam_logo.png" alt="SK Team Logo" class="h-12 w-auto object-contain" />
                 <span class="text-2xl font-bold tracking-wider">Sk<span class="text-blue-500">.team</span></span>
             </a>
             <nav class="hidden md:flex items-center gap-8 text-gray-300 font-medium">
-                <a href="#" class="hover:text-blue-400 transition-colors">خانه</a>
-                <a href="#" class="hover:text-blue-400 transition-colors">ربات‌های تلگرام</a>
-                <a href="#" class="hover:text-blue-400 transition-colors">ربات‌های روبیکا</a>
-                <a href="#" class="hover:text-blue-400 transition-colors">سرویس‌های تلگرام</a>
+                <a href="#" onclick="showHome()" class="hover:text-blue-400 transition-colors">خانه</a>
+                <a href="#bots" onclick="showHome()" class="hover:text-blue-400 transition-colors">ربات‌ها</a>
+                <a href="#services" onclick="showHome()" class="hover:text-blue-400 transition-colors">خدمات ما</a>
+                <a href="#about" onclick="showHome()" class="hover:text-blue-400 transition-colors">درباره ما</a>
             </nav>
-            <a href="#" class="bg-blue-600 hover:bg-blue-500 text-white px-5 py-2.5 rounded-xl font-medium transition-all shadow-[0_0_15px_rgba(37,99,235,0.4)]">سفارش ساخت</a>
+            <a href="#contact" onclick="showHome()" class="bg-blue-600 hover:bg-blue-500 text-white px-5 py-2.5 rounded-xl font-medium transition-all shadow-[0_0_15px_rgba(37,99,235,0.4)]">ارتباط با ما</a>
         </div>
     </header>
 
-    <!-- Hero Section -->
-    <section class="max-w-7xl mx-auto px-4 py-20 flex flex-col md:flex-row items-center justify-between gap-12">
-        <div class="flex-1 text-center md:text-right">
-            <h1 class="text-5xl md:text-6xl font-extrabold leading-tight mb-6">
-                دنیای ربات‌های هوشمند <br />
-                با <span class="text-blue-500 drop-shadow-[0_0_15px_rgba(59,130,246,0.5)]">SK Team</span>
-            </h1>
-            <p class="text-gray-400 text-lg md:text-xl mb-8 leading-relaxed max-w-2xl mx-auto md:mx-0">
-                از مدیریت گروه و پخش موزیک تا سرویس‌های پریمیوم تلگرام. ما بهترین ابزارهای اتوماسیون را برای رشد و سرگرمی شما توسعه می‌دهیم.
-            </p>
-            <div class="flex items-center justify-center md:justify-start gap-4">
-                <a href="#" class="bg-blue-600 hover:bg-blue-500 text-white px-8 py-3 rounded-xl font-bold text-lg transition-all shadow-[0_0_20px_rgba(37,99,235,0.4)]">مشاهده ربات‌ها</a>
-            </div>
-        </div>
-        <div class="flex-1 flex justify-center">
-            <!-- استفاده از لوگوی نئونی برای بخش اصلی -->
-            <img src="skteam_logo.png" alt="SK Team Neon" class="w-72 h-72 md:w-96 md:h-96 object-contain drop-shadow-[0_0_30px_rgba(59,130,246,0.3)]" />
-        </div>
-    </section>
-
-    <!-- Bot Cards -->
-    <section class="max-w-7xl mx-auto px-4 py-16 border-t border-gray-800">
-        <h2 class="text-3xl font-bold mb-8">ربات‌های منتخب</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <!-- Main Content -->
+    <main class="flex-grow">
+        
+        <!-- ================= HOME VIEW ================= -->
+        <div id="home-view" class="hide fade-in">
             
-            <!-- Card 1 -->
-            <div class="bg-[#1e2329] border border-gray-700 rounded-2xl p-6 flex flex-col justify-between hover:border-blue-500 transition-all relative">
-                <div>
-                    <div class="w-full h-40 relative mb-4 flex justify-center items-center bg-[#0a0c10] rounded-xl overflow-hidden border border-gray-800">
-                        <!-- فعلا از لوگوی اصلی برای کارت ربات استفاده میکنیم -->
-                        <img src="logo.png" alt="موزیک پلیر" class="w-32 h-32 object-contain" />
+            <!-- Hero Section -->
+            <section class="max-w-7xl mx-auto px-4 py-20 flex flex-col md:flex-row items-center justify-between gap-12">
+                <div class="flex-1 text-center md:text-right">
+                    <h1 class="text-5xl md:text-6xl font-extrabold leading-tight mb-6">
+                        آینده کسب و کارت رو <br />
+                        با <span class="text-blue-500 neon-text">اتوماسیون</span> بساز
+                    </h1>
+                    <p class="text-gray-400 text-lg md:text-xl mb-8 leading-relaxed max-w-2xl mx-auto md:mx-0">
+                        تیم برنامه‌نویسی SK Team با طراحی ربات‌های هوشمند و سایت‌های اختصاصی، به رشد و رونق کسب و کار شما سرعت می‌بخشد.
+                    </p>
+                    <div class="flex items-center justify-center md:justify-start gap-4">
+                        <a href="#bots" class="bg-blue-600 hover:bg-blue-500 text-white px-8 py-3 rounded-xl font-bold text-lg transition-all shadow-[0_0_20px_rgba(37,99,235,0.4)]">مشاهده ربات‌ها</a>
                     </div>
-                    <h3 class="text-xl font-bold mb-2">موزیک پلیر</h3>
-                    <p class="text-gray-400 text-sm mb-6 leading-relaxed">دانلود و پخش آهنگ در گروه با کیفیت بالا</p>
                 </div>
-                <div class="flex items-center justify-between mt-4 pt-4 border-t border-gray-700">
-                    <span class="text-blue-400 font-bold">به زودی</span>
+                <div class="flex-1 flex justify-center">
+                    <img src="group-manager.png" alt="SK Team Robot" class="w-72 h-72 md:w-96 md:h-96 object-contain drop-shadow-[0_0_30px_rgba(59,130,246,0.3)]" />
                 </div>
-            </div>
+            </section>
 
-            <!-- Card 2 -->
-            <div class="bg-[#1e2329] border border-gray-700 rounded-2xl p-6 flex flex-col justify-between hover:border-blue-500 transition-all relative">
-                <div>
-                    <div class="w-full h-40 relative mb-4 flex justify-center items-center bg-[#0a0c10] rounded-xl overflow-hidden border border-gray-800">
-                        <img src="skteam_logo.png" alt="مدیریت گروه" class="w-32 h-32 object-contain" />
+            <!-- Bots Section -->
+            <section id="bots" class="max-w-7xl mx-auto px-4 py-16 border-t border-gray-800">
+                <div class="text-center mb-12">
+                    <h2 class="text-4xl font-bold mb-4">ربات‌های هوشمند SK Team</h2>
+                    <p class="text-gray-400">روی هر ربات کلیک کنید تا توضیحات کامل آن را ببینید.</p>
+                </div>
+                <!-- Bot Cards Grid -->
+                <div id="bots-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
+            </section>
+
+            <!-- Services Section -->
+            <section id="services" class="max-w-7xl mx-auto px-4 py-16 border-t border-gray-800">
+                <div class="text-center mb-12">
+                    <h2 class="text-4xl font-bold mb-4">خدمات تخصصی ما</h2>
+                    <p class="text-gray-400">فراتر از ربات‌های آماده، ما در کنار شما هستیم.</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bg-[#1e2329] border border-gray-700 rounded-2xl p-6 neon-box">
+                        <h3 class="text-xl font-bold mb-3 text-blue-400">ربات‌های پیام‌رسان</h3>
+                        <p class="text-gray-400 text-sm leading-relaxed">طراحی و ساخت ربات برای تلگرام، ایتا، بله و روبیکا بر اساس نیاز شما. (ربات‌های اینستاگرام به زودی)</p>
                     </div>
-                    <h3 class="text-xl font-bold mb-2">مدیریت گروه</h3>
-                    <p class="text-gray-400 text-sm mb-6 leading-relaxed">ابزارهای کامل مدیریت، اخراج، بن و تنظیمات گروه</p>
+                    <div class="bg-[#1e2329] border border-gray-700 rounded-2xl p-6 neon-box">
+                        <h3 class="text-xl font-bold mb-3 text-blue-400">طراحی وب‌سایت</h3>
+                        <p class="text-gray-400 text-sm leading-relaxed">طراحی انواع سایت شرکتی، فروشگاهی و شخصی با بالاترین کیفیت و سرعت.</p>
+                    </div>
+                    <div class="bg-[#1e2329] border border-gray-700 rounded-2xl p-6 neon-box">
+                        <h3 class="text-xl font-bold mb-3 text-blue-400">مدیریت شبکه‌های مجازی</h3>
+                        <p class="text-gray-400 text-sm leading-relaxed">مدیریت و رونق کسب و کار شما در شبکه‌های اجتماعی با استفاده از ربات‌های منشی و پاسخگوی خودکار.</p>
+                    </div>
                 </div>
-                <div class="flex items-center justify-between mt-4 pt-4 border-t border-gray-700">
-                    <span class="text-blue-400 font-bold">به زودی</span>
-                </div>
-            </div>
+            </section>
 
+            <!-- About Us -->
+            <section id="about" class="max-w-4xl mx-auto px-4 py-16 border-t border-gray-800 text-center">
+                <h2 class="text-4xl font-bold mb-6">درباره <span class="text-blue-500">SK Team</span></h2>
+                <p class="text-gray-300 text-lg leading-relaxed">
+                    تیم SK Team متشکل از برنامه‌نویسان متخصص و خلاق است که با هدف رونق کسب و کارها در فضای مجازی شکل گرفته است. ما با طراحی ربات‌های هوشمند و اتوماسیون‌های پیشرفته، ابزارهای لازم برای رشد و مدیریت آسان‌تر شبکه‌های اجتماعی شما را فراهم می‌کنیم. تخصص ما ساخت ربات‌های سفارشی و اختصاصی برای شماست.
+                </p>
+            </section>
         </div>
-    </section>
 
+        <!-- ================= BOT DETAIL VIEW ================= -->
+        <div id="bot-detail-view" class="hide fade-in max-w-5xl mx-auto px-4 py-12">
+            <button onclick="showHome()" class="mb-8 flex items-center gap-2 text-blue-400 hover:text-blue-300 font-bold bg-[#1e2329] px-4 py-2 rounded-lg border border-gray-700 transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" /></svg>
+                بازگشت به صفحه اصلی
+            </button>
+            
+            <div class="bg-[#1e2329] border border-gray-700 rounded-3xl p-8 md:p-12 shadow-2xl relative overflow-hidden neon-box">
+                <div class="flex flex-col md:flex-row items-center md:items-start gap-8">
+                    <div class="w-48 h-48 flex-shrink-0 bg-[#0a0c10] rounded-2xl p-4 flex items-center justify-center border border-gray-800">
+                        <img id="detail-image" src="" alt="" class="w-full h-full object-contain" />
+                    </div>
+                    <div class="flex-1 text-center md:text-right">
+                        <h1 id="detail-title" class="text-4xl font-extrabold mb-4 text-blue-400 neon-text"></h1>
+                        <p id="detail-desc" class="text-gray-400 text-lg mb-6 leading-relaxed"></p>
+                        <div class="flex flex-wrap justify-center md:justify-start gap-4">
+                            <!-- Placeholder for Telegram Link -->
+                            <a href="https://t.me/YourSupportID" target="_blank" class="bg-blue-600 hover:bg-blue-500 text-white px-8 py-3 rounded-xl font-bold transition-all shadow-[0_0_20px_rgba(37,99,235,0.4)]">مشاهده قیمت و خرید در تلگرام</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-12 pt-8 border-t border-gray-700">
+                    <h3 class="text-2xl font-bold mb-6 text-white">امکانات و قابلیت‌ها</h3>
+                    <div id="detail-features" class="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-300 leading-relaxed text-sm">
+                        <!-- Features list will be injected here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer id="contact" class="bg-[#0f1218] border-t border-gray-800 py-12 mt-10">
+        <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-8">
+            <div class="text-center md:text-right">
+                <div class="flex items-center justify-center md:justify-start gap-3 mb-4">
+                    <img src="skteam_logo.png" alt="SK Team Logo" class="h-10 w-auto object-contain" />
+                    <span class="text-xl font-bold tracking-wider">Sk<span class="text-blue-500">.team</span></span>
+                </div>
+                <p class="text-gray-500 text-sm">تمامی حقوق مادی و معنوی این سایت متعلق به SK Team می‌باشد. &copy; 2024</p>
+            </div>
+            
+            <div class="text-center md:text-left bg-[#1e2329] border border-gray-700 p-6 rounded-2xl">
+                <h3 class="text-lg font-bold text-white mb-2">ارتباط با ما</h3>
+                <p class="text-gray-400 text-sm mb-4">برای سفارش ربات یا پشتیبانی به ما پیام دهید.</p>
+                <!-- Placeholder for Telegram Link -->
+                <a href="https://t.me/YourSupportID" target="_blank" class="inline-flex items-center gap-2 bg-[#2AABEE] hover:bg-[#229ED9] text-white px-6 py-2 rounded-lg font-medium transition-all">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+                    پشتیبانی تلگرام
+                </a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        // Splash Screen Logic
+        window.addEventListener('DOMContentLoaded', () => {
+            const splash = document.getElementById('splash-screen');
+            const logo = document.getElementById('splash-logo');
+            const header = document.getElementById('main-header');
+            const homeView = document.getElementById('home-view');
+
+            // 1. Wait 1.5s then shrink logo
+            setTimeout(() => {
+                logo.classList.add('logo-shrink');
+            }, 1500);
+
+            // 2. Wait 2.5s then remove splash and show site
+            setTimeout(() => {
+                splash.style.opacity = '0';
+                setTimeout(() => {
+                    splash.style.display = 'none';
+                    header.classList.remove('opacity-0');
+                    homeView.classList.remove('hide');
+                }, 800); // Wait for fade out
+            }, 2500);
+        });
+
+        // Data for all bots
+        const botsData = {
+            'music-player': {
+                title: 'ربات موزیک پلیر',
+                image: 'music-player.png',
+                shortDesc: 'پخش و دانلود آنلاین موزیک با کیفیت ۳۲۰، همراه با ۴۰ اسکین اختصاصی و اکولایزرهای حرفه‌ای.',
+                features: [
+                    '🎧 پخش و دانلود: پخش آنلاین و قابلیت دانلود فایل‌ها با کیفیت عالی ۳۲۰ کیلوبیت بر ثانیه.',
+                    '🌐 پشتیبانی از سایت‌های معروف: دریافت و پخش مستقیم از یوتیوب، ساندکلود و چندین پلتفرم دیگر.',
+                    '🎨 شخصی‌سازی کامل (۴۰+ اسکین): بیش از ۴۰ قالب ظاهری (اسکین) که مالک گروه می‌تواند تغییر دهد.',
+                    '🎛 اکولایزر حرفه‌ای (۲۰+ حالت): نزدیک به ۲۰ حالت اکولایزر و قابلیت تنظیم سرعت پخش موزیک.',
+                    '📂 آرشیو هوشمند: آرشیو کامل و منظم تمامی فایل‌های پخش شده برای دسترسی آسان.'
+                ]
+            },
+            'video-player': {
+                title: 'ربات ویدیو پلیر',
+                image: 'video-player.png',
+                shortDesc: 'پخش آنلاین شبکه‌های تلویزیونی، ماهواره‌ای و فایل‌های تصویری به صورت مستقیم در گروه.',
+                features: [
+                    '📺 پخش زنده تلویزیون: پخش آنلاین شبکه‌های ماهواره‌ای و داخلی.',
+                    '🎬 پخش فایل‌های ویدیویی: پخش ویدیوهای ارسالی در گروه با بالاترین کیفیت.',
+                    '🚀 سرعت بالا: استریم بدون لگ و روان برای گروه‌های پرجمعیت.'
+                ]
+            },
+            'group-manager': {
+                title: 'ربات مدیریت گروه (Ultimate)',
+                image: 'group-manager.png',
+                shortDesc: 'کامل‌ترین سیستم‌عامل مدیریت گروه؛ مجهز به هوش مصنوعی، سیستم اشتراک، فیلتر NSFW، ربات موزیک و ده‌ها قابلیت امنیتی!',
+                features: [
+                    '🔐 امنیت و مدیریت: سیستم کامل اخطار، بن، سکوت، قفل‌های پیشرفته (رسانه، لینک)، ضد رگبار و ضد رید.',
+                    '🤖 هوش مصنوعی (AI): پاسخگویی خودکار به پیام‌ها با قابلیت تنظیم شخصیت.',
+                    '💎 سیستم اشتراک: فروش اشتراک (مدیریت، موزیک، رکورد، NSFW) با تعرفه ۱ تا ۱۲ ماهه.',
+                    '🎵 ربات‌های همراه: مجهز به موزیک‌پلیر (یوتیوب/ساندکلود) و رکوردر ویس‌کال.',
+                    '🎮 سرگرمی: مجموعه کامل بازی‌ها (مافیا، جرات و حقیقت، تاس)، ۱۰۰ معما، ۱۰۰ جوک و فال حافظ.',
+                    '📢 لاگ و گزارش: کانال لاگ اختصاصی برای ثبت تمام وقایع و گزارش‌های روزانه به پیوی مالک.',
+                    '⚙️ پنل‌های مدیریتی: پنل سازنده، پنل مالک گروه و پنل سیستم.'
+                ]
+            },
+            'voice-recorder': {
+                title: 'ریکوردر ویس‌کال',
+                image: 'voice-recorder.png',
+                shortDesc: 'ضبط خودکار تمام مکالمات ویس‌کال با تنظیم بازه زمانی دلخواه و ارسال مستقیم به پیوی مدیر.',
+                features: [
+                    '🎧 ضبط کامل مکالمات: ربات به صورت خودکار وارد ویس‌کال شده و تمامی صحبت‌ها را ضبط می‌کند.',
+                    '⏱ تنظیم بازه زمانی (کلیپ‌بندی): قابلیت تنظیم مدت زمان هر کلیپ (مثلاً ۱، ۳، ۵، ۱۵ یا ۳۰ دقیقه) توسط مالک گروه.',
+                    '🎛 کنترل کامل در دست مدیر: مالک گروه می‌تواند ربات را در هر لحظه روشن یا خاموش کند.',
+                    '📥 ارسال امن به پیوی (PV): تمامی فایل‌های صوتی ضبط شده، به صورت مستقیم و امن به چت خصوصی مالک گروه ارسال می‌شوند.'
+                ]
+            },
+            'content-guard': {
+                title: 'ربات گارد محتوا (فیلتر +18)',
+                image: 'content-guard.png',
+                shortDesc: 'فیلتر هوشمند محتوای نامناسب (+18) با ۳ سطح حساسیت، اخطار خودکار و سیستم تنبیه (سکوت/بن).',
+                features: [
+                    '🎚 ۳ سطح حساسیت هوشمند: دارای ۳ حالت تنظیم حساسیت (کم، متوسط، زیاد) برای تشخیص دقیق محتوای نامناسب.',
+                    '🖼 شناسایی انواع رسانه: هوش مصنوعی ربات تمامی عکس‌ها، فیلم‌ها، گیف‌ها و استیکرهای حاوی محتوای غیراخلاقی را شناسایی می‌کند.',
+                    '🗑 حذف خودکار و اخطار: پیام نامناسب فوراً از گروه حذف شده و به کاربر متخلف اخطار داده می‌شود.',
+                    '⚖️ سیستم تنبیه قابل تنظیم: مدیر گروه می‌تواند تعیین کند که پس از چند بار اخطار، شخص «سکوت»، «اخراج» یا «بن» شود.',
+                    '⚙️ مدیریت آسان: تمامی این تنظیمات از داخل پنل خود ربات توسط مالک گروه قابل شخصی‌سازی است.',
+                    '⚠️ توجه: این ربات به صورت اشتراک جداگانه ارائه می‌شود.'
+                ]
+            },
+            'self-bot': {
+                title: 'ربات سلف (Self Bot)',
+                image: 'self-bot.png',
+                shortDesc: 'رباتی که روی اکانت شخصی شما نصب می‌شود و امکانات پیشرفته‌ای مانند منشی هوشمند، ساعت بیو و پاسخ خودکار را ارائه می‌دهد.',
+                features: [
+                    '⚠️ نصب این ربات به معنی دسترسی آن به اکانت شما جهت انجام دستورات است.',
+                    '⛔️ گذاشتن ساعت با فونت‌های مختلف بر روی بیو و اسم.',
+                    '❈ قابلیت تنظیم حالت خوانده شدن خودکار پیام‌ها.',
+                    '⚙️ تنظیم حالت پاسخ خودکار و منشی هوشمند.',
+                    '✈️ جواب دادن به شخصی که به شما توهین می‌کند.',
+                    '⛈ پیام انیمیشنی و دو زبانه بودن دستورات.',
+                    '⚙️ دریافت پنل و تنظیمات اکانت هوشمند.',
+                    '⚙️ تغییر نام و کاور فایل‌ها.',
+                    '⚙️ اعلان پیام‌های ادیت و حذف شده در پیوی.',
+                    '⚙️ ذخیره پروفایل‌های جدید و اعلان حذف پروفایل مخاطبین.',
+                    '📖 (امکانات بسیار بیشتری پس از خرید در دسترس شما قرار می‌گیرد).'
+                ]
+            }
+        };
+
+        // Render Bot Cards on Home Page
+        function renderBots() {
+            const grid = document.getElementById('bots-grid');
+            grid.innerHTML = '';
+            
+            for (const [id, bot] of Object.entries(botsData)) {
+                const card = document.createElement('div');
+                // Added bot-card class for touch effect
+                card.className = 'bot-card bg-[#1e2329] border border-gray-700 rounded-2xl p-6 flex flex-col justify-between cursor-pointer neon-box group relative overflow-hidden';
+                card.onclick = () => openBotDetail(id);
+                
+                card.innerHTML = `
+                    <div>
+                        <div class="w-full h-48 relative mb-6 flex justify-center items-center bg-[#0a0c10] rounded-xl overflow-hidden border border-gray-800 group-hover:scale-105 transition-transform duration-300">
+                            <img src="${bot.image}" alt="${bot.title}" class="w-40 h-40 object-contain drop-shadow-[0_0_15px_rgba(59,130,246,0.3)]" />
+                        </div>
+                        <h3 class="text-2xl font-bold mb-3 text-white">${bot.title}</h3>
+                        <p class="text-gray-400 text-sm mb-6 leading-relaxed">${bot.shortDesc}</p>
+                    </div>
+                    <div class="flex items-center justify-center mt-4 pt-4 border-t border-gray-700">
+                        <span class="text-blue-400 font-bold group-hover:text-blue-300 flex items-center gap-2 transition-colors">
+                            مشاهده جزئیات
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
+                        </span>
+                    </div>
+                `;
+                grid.appendChild(card);
+            }
+        }
+
+        // Open Bot Detail Page
+        function openBotDetail(botId) {
+            const bot = botsData[botId];
+            if(!bot) return;
+
+            // Hide Home, Show Detail
+            document.getElementById('home-view').classList.add('hide');
+            const detailView = document.getElementById('bot-detail-view');
+            detailView.classList.remove('hide');
+
+            // Populate Data
+            document.getElementById('detail-title').innerText = bot.title;
+            document.getElementById('detail-image').src = bot.image;
+            document.getElementById('detail-desc').innerText = bot.shortDesc;
+            
+            const featuresContainer = document.getElementById('detail-features');
+            featuresContainer.innerHTML = '';
+            bot.features.forEach(feature => {
+                const div = document.createElement('div');
+                div.className = 'bg-[#0a0c10] p-4 rounded-xl border border-gray-800';
+                div.innerHTML = feature;
+                featuresContainer.appendChild(div);
+            });
+
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Show Home Page
+        function showHome() {
+            document.getElementById('bot-detail-view').classList.add('hide');
+            document.getElementById('home-view').classList.remove('hide');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Initialize Rendering
+        document.addEventListener('DOMContentLoaded', () => {
+            renderBots();
+        });
+    </script>
 </body>
 </html>

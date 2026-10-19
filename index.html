@@ -6,14 +6,16 @@
     <title>SK Team | Travel to the Future</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdn.fontcdn.ir/Font/Persian/Vazir/Vazir.css" rel="stylesheet" type="text/css" />
-    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
     <style>
         body { font-family: Vazir, sans-serif; background-color: #0a0c10; color: white; overflow-x: hidden; margin: 0; }
         
-        ::-webkit-scrollbar { width: 8px; }
+        /* Custom Neon Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: #0a0c10; }
         ::-webkit-scrollbar-thumb { background: #3b82f6; border-radius: 4px; box-shadow: 0 0 10px #3b82f6; }
-        
+        ::-webkit-scrollbar-thumb:hover { background: #60a5fa; }
+
+        /* Background Matrix */
         #bg-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; opacity: 0.5; }
 
         /* Splash Screen */
@@ -24,9 +26,11 @@
         @media (min-width: 768px) { #main-splash-logo { width: 280px; height: 280px; filter: drop-shadow(0 0 40px rgba(59,130,246,0.9)); } }
         #main-splash-logo.show { opacity: 1; transform: scale(1); }
 
+        /* Main Content */
         #main-content { position: relative; z-index: 10; opacity: 0; visibility: hidden; transition: opacity 2s ease, visibility 2s; }
         #main-content.show { opacity: 1; visibility: visible; }
 
+        /* Neon Effects & Animations */
         .neon-text { text-shadow: 0 0 15px rgba(59,130,246,0.7); }
         .neon-border { border: 1px solid rgba(59, 130, 246, 0.3); box-shadow: 0 0 15px rgba(59, 130, 246, 0.1); transition: all 0.3s ease; }
         .neon-border:hover { border-color: #3b82f6; box-shadow: 0 0 25px rgba(59, 130, 246, 0.6); transform: translateY(-5px); }
@@ -47,28 +51,11 @@
 
         .header-glow::after { content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 2px; background: linear-gradient(90deg, transparent, #3b82f6, transparent); opacity: 0.5; }
 
+        /* Modals */
         .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(10, 12, 16, 0.9); backdrop-filter: blur(5px); z-index: 1000; display: flex; justify-content: center; align-items: center; opacity: 0; visibility: hidden; transition: all 0.3s ease; }
         .modal.active { opacity: 1; visibility: visible; }
         .modal-content { background: #1e2329; border: 1px solid #3b82f6; box-shadow: 0 0 30px rgba(59,130,246,0.3); width: 92%; max-width: 600px; border-radius: 1rem; padding: 2rem; transform: scale(0.9); transition: transform 0.3s ease; max-height: 90vh; overflow-y: auto; }
         .modal.active .modal-content { transform: scale(1); }
-
-        /* Matrix Clock */
-        .matrix-clock {
-            font-family: 'Share Tech Mono', monospace;
-            font-weight: 600;
-            color: #60a5fa;
-            text-shadow: 0 0 10px rgba(59,130,246,0.8);
-            letter-spacing: 2px;
-            background: #15191e;
-            padding: 5px 12px;
-            border-radius: 8px;
-            border: 1px solid #3b82f6;
-            box-shadow: inset 0 0 10px rgba(59,130,246,0.2);
-            display: flex;
-            gap: 2px;
-        }
-        .time-part { display: inline-block; position: relative; transition: all 0.5s ease; }
-        .time-part.falling { transform: translateY(20px); opacity: 0; filter: blur(2px); }
     </style>
 </head>
 <body class="min-h-screen flex flex-col relative">
@@ -82,6 +69,7 @@
 
     <div id="main-content" class="flex-grow flex flex-col min-h-screen">
         
+        <!-- Header -->
         <header class="bg-[#0f1218]/90 backdrop-blur-md border-b border-gray-800 sticky top-0 z-40 header-glow relative">
             <div class="max-w-7xl mx-auto px-2 md:px-4 h-20 flex items-center justify-between gap-2">
                 
@@ -91,41 +79,40 @@
                 </a>
                 
                 <nav class="hidden md:flex items-center gap-6 text-gray-300 font-medium">
-                    <a href="#" onclick="showHome()" class="hover:text-blue-400 transition-colors" data-i18n="nav_home">خانه</a>
-                    <a href="#bots" onclick="showHome()" class="hover:text-blue-400 transition-colors" data-i18n="nav_bots">ربات‌ها</a>
-                    <a href="#services" onclick="showHome()" class="hover:text-blue-400 transition-colors" data-i18n="nav_services">خدمات ما</a>
-                    <a href="#about" onclick="showHome()" class="hover:text-blue-400 transition-colors" data-i18n="nav_about">درباره ما</a>
+                    <a href="#" onclick="showHome()" class="hover:text-blue-400 transition-colors" data-i18n="nav_home"></a>
+                    <a href="#bots" onclick="showHome()" class="hover:text-blue-400 transition-colors" data-i18n="nav_bots"></a>
+                    <a href="#services" onclick="showHome()" class="hover:text-blue-400 transition-colors" data-i18n="nav_services"></a>
+                    <a href="#about" onclick="showHome()" class="hover:text-blue-400 transition-colors" data-i18n="nav_about"></a>
                 </nav>
 
                 <div class="flex items-center gap-2 md:gap-4">
-                    <!-- Matrix Clock -->
-                    <div id="live-clock" class="hidden md:flex matrix-clock text-sm">
-                        <span id="clock-h" class="time-part">00</span>:<span id="clock-m" class="time-part">00</span>:<span id="clock-s" class="time-part">00</span>
-                    </div>
+                    <!-- Nixie Clock Canvas -->
+                    <canvas id="clock-canvas" class="hidden md:block" width="160" height="40"></canvas>
 
-                    <select id="lang-select" onchange="changeLanguage(this.value)" class="bg-[#1e2329] border border-gray-700 text-gray-300 text-xs md:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-20 md:w-24 p-1.5 md:p-2 cursor-pointer z-50">
+                    <select id="lang-select" onchange="changeLanguage(this.value)" class="bg-[#1e2329] border border-gray-700 text-gray-300 text-xs md:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-24 p-2 cursor-pointer z-50">
                         <option value="fa">فارسی</option>
-                        <option value="en">EN</option>
-                        <option value="ar">عربی</option>
-                        <option value="ru">RU</option>
-                        <option value="tr">TR</option>
+                        <option value="en">English</option>
+                        <option value="ar">العربية</option>
+                        <option value="ru">Русский</option>
+                        <option value="tr">Türkçe</option>
                     </select>
 
                     <button onclick="toggleMobileMenu()" class="md:hidden text-gray-300 hover:text-white focus:outline-none p-1">
                         <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
                     </button>
 
-                    <a href="#contact" onclick="showHome()" class="hidden md:block bg-blue-600 hover:bg-blue-500 text-white px-5 py-2.5 rounded-xl font-medium transition-all shadow-[0_0_15px_rgba(37,99,235,0.4)] whitespace-nowrap" data-i18n="btn_contact">ارتباط با ما</a>
+                    <a href="#contact" onclick="showHome()" class="hidden md:block bg-blue-600 hover:bg-blue-500 text-white px-5 py-2.5 rounded-xl font-medium transition-all shadow-[0_0_15px_rgba(37,99,235,0.4)] whitespace-nowrap" data-i18n="btn_contact"></a>
                 </div>
             </div>
 
+            <!-- Mobile Menu -->
             <div id="mobile-menu" class="hidden md:hidden bg-[#0f1218] border-b border-gray-800 absolute w-full shadow-2xl">
                 <div class="px-4 py-4 flex flex-col gap-3 text-center text-gray-300 font-medium">
-                    <a href="#" onclick="showHome(); toggleMobileMenu()" class="hover:text-blue-400 py-2 border-b border-gray-800" data-i18n="nav_home">خانه</a>
-                    <a href="#bots" onclick="showHome(); toggleMobileMenu()" class="hover:text-blue-400 py-2 border-b border-gray-800" data-i18n="nav_bots">ربات‌ها</a>
-                    <a href="#services" onclick="showHome(); toggleMobileMenu()" class="hover:text-blue-400 py-2 border-b border-gray-800" data-i18n="nav_services">خدمات ما</a>
-                    <a href="#about" onclick="showHome(); toggleMobileMenu()" class="hover:text-blue-400 py-2 border-b border-gray-800" data-i18n="nav_about">درباره ما</a>
-                    <a href="#contact" onclick="showHome(); toggleMobileMenu()" class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg mt-2" data-i18n="btn_contact">ارتباط با ما</a>
+                    <a href="#" onclick="showHome(); toggleMobileMenu()" class="hover:text-blue-400 py-2 border-b border-gray-800" data-i18n="nav_home"></a>
+                    <a href="#bots" onclick="showHome(); toggleMobileMenu()" class="hover:text-blue-400 py-2 border-b border-gray-800" data-i18n="nav_bots"></a>
+                    <a href="#services" onclick="showHome(); toggleMobileMenu()" class="hover:text-blue-400 py-2 border-b border-gray-800" data-i18n="nav_services"></a>
+                    <a href="#about" onclick="showHome(); toggleMobileMenu()" class="hover:text-blue-400 py-2 border-b border-gray-800" data-i18n="nav_about"></a>
+                    <a href="#contact" onclick="showHome(); toggleMobileMenu()" class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg mt-2" data-i18n="btn_contact"></a>
                 </div>
             </div>
         </header>
@@ -205,7 +192,7 @@
             <div id="bot-detail-view" class="hide fade-in max-w-5xl mx-auto px-4 py-12">
                 <button onclick="showHome()" class="mb-8 flex items-center gap-2 text-blue-400 hover:text-blue-300 font-bold bg-[#1e2329] px-4 py-2 rounded-lg border border-gray-700 transition-colors text-sm md:text-base">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" /></svg>
-                    <span data-i18n="btn_back">بازگشت به صفحه اصلی</span>
+                    <span data-i18n="btn_back"></span>
                 </button>
                 
                 <div class="bg-[#1e2329] border border-gray-700 rounded-3xl p-6 md:p-12 shadow-2xl relative overflow-hidden neon-border">
@@ -217,19 +204,20 @@
                             <h1 id="detail-title" class="text-3xl md:text-4xl font-extrabold mb-4 text-blue-400 neon-text"></h1>
                             <p id="detail-desc" class="text-gray-400 text-base md:text-lg mb-6 leading-relaxed"></p>
                             <div class="flex flex-wrap justify-center md:justify-start gap-4">
-                                <a href="https://t.me/Siavashska" target="_blank" class="bg-blue-600 hover:bg-blue-500 text-white px-6 md:px-8 py-3 rounded-xl font-bold transition-all shadow-[0_0_20px_rgba(37,99,235,0.4)] text-sm md:text-base pulse-btn" data-i18n="btn_buy_telegram">مشاهده قیمت و خرید در تلگرام</a>
+                                <a href="https://t.me/Siavashska" target="_blank" class="bg-blue-600 hover:bg-blue-500 text-white px-6 md:px-8 py-3 rounded-xl font-bold transition-all shadow-[0_0_20px_rgba(37,99,235,0.4)] text-sm md:text-base pulse-btn" data-i18n="btn_buy_telegram"></a>
                             </div>
                         </div>
                     </div>
 
                     <div class="mt-10 md:mt-12 pt-8 border-t border-gray-700">
-                        <h3 class="text-2xl font-bold mb-6 text-white text-center md:text-right" data-i18n="section_features">امکانات و قابلیت‌ها</h3>
+                        <h3 class="text-2xl font-bold mb-6 text-white text-center md:text-right" data-i18n="section_features"></h3>
                         <div id="detail-features" class="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-300 leading-relaxed text-sm md:text-base"></div>
                     </div>
                 </div>
             </div>
         </main>
 
+        <!-- Footer -->
         <footer id="contact" class="bg-[#0f1218] border-t border-gray-800 py-10 md:py-12 mt-10 relative z-10">
             <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-10 md:gap-8">
                 
@@ -238,32 +226,31 @@
                         <img src="skteam_ring_transparent.png" alt="SK Team Logo" class="h-10 w-auto object-contain" />
                         <span class="text-xl font-bold tracking-wider">Sk<span class="text-blue-500">.team</span></span>
                     </div>
-                    <p class="text-gray-500 text-sm mb-2" data-i18n="footer_rights">تمامی حقوق مادی و معنوی این سایت متعلق به SK Team می‌باشد. © 2024</p>
-                    <div id="live-date-footer" class="text-xs text-gray-400 bg-[#1e2329] px-3 py-1 rounded-lg border border-gray-700 inline-block"></div>
+                    <p class="text-gray-500 text-sm mb-2" data-i18n="footer_rights"></p>
                 </div>
                 
                 <div class="text-center md:text-left bg-[#1e2329] border border-gray-700 p-6 rounded-2xl w-full md:w-auto">
-                    <h3 class="text-lg font-bold text-white mb-4 text-center md:text-left" data-i18n="footer_contact_title">ارتباط با ما</h3>
+                    <h3 class="text-lg font-bold text-white mb-4 text-center md:text-left" data-i18n="footer_contact_title"></h3>
                     <div class="flex flex-wrap justify-center md:justify-start gap-3">
                         <a href="https://t.me/Siavashska" target="_blank" class="inline-flex justify-center items-center gap-2 bg-[#2AABEE] hover:bg-[#229ED9] text-white px-4 py-2 rounded-lg text-sm font-medium transition-all w-full sm:w-auto shadow-[0_0_10px_rgba(42,171,238,0.4)]">
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
-                            <span data-i18n="btn_support">پشتیبانی</span>
+                            <span data-i18n="btn_support"></span>
                         </a>
                         <a href="https://t.me/Skteamchnl" target="_blank" class="inline-flex justify-center items-center gap-2 bg-[#2AABEE] hover:bg-[#229ED9] text-white px-4 py-2 rounded-lg text-sm font-medium transition-all w-full sm:w-auto shadow-[0_0_10px_rgba(42,171,238,0.4)]">
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
-                            <span data-i18n="btn_channel">کانال</span>
+                            <span data-i18n="btn_channel"></span>
                         </a>
                         <a href="mailto:sk.team.it@gmail.com" class="inline-flex justify-center items-center gap-2 bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all w-full sm:w-auto">
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
-                            <span data-i18n="btn_email">ایمیل</span>
+                            <span data-i18n="btn_email"></span>
                         </a>
                         <a href="https://instagram.com/" target="_blank" class="inline-flex justify-center items-center gap-2 bg-gradient-to-tr from-yellow-400 via-pink-500 to-purple-500 hover:opacity-90 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all w-full sm:w-auto">
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
-                            <span data-i18n="btn_instagram">اینستاگرام</span>
+                            <span data-i18n="btn_instagram"></span>
                         </a>
                         <button onclick="openQRModal()" class="inline-flex justify-center items-center gap-2 bg-purple-600 hover:bg-purple-500 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all w-full sm:w-auto shadow-[0_0_10px_rgba(147,51,234,0.4)]">
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="5" height="5" x="3" y="3" rx="1"/><rect width="5" height="5" x="16" y="3" rx="1"/><rect width="5" height="5" x="3" y="16" rx="1"/><path d="M21 16h-3a2 2 0 0 0-2 2v3"/><path d="M21 21v.01"/><path d="M12 7v3a2 2 0 0 1-2 2H7"/><path d="M3 12h.01"/><path d="M12 3h.01"/><path d="M12 16v.01"/><path d="M16 12h1"/><path d="M21 12v.01"/><path d="M12 21v-1"/></svg>
-                            <span data-i18n="btn_vcard">کارت ویزیت</span>
+                            <span data-i18n="btn_vcard"></span>
                         </button>
                     </div>
                 </div>
@@ -302,9 +289,9 @@
     </div>
 
     <script>
-        // ================= TRANSLATIONS DICTIONARY (COMPACT) =================
+        // ================= TRANSLATIONS DICTIONARY =================
         const translations = {
-            fa: { nav_home: "خانه", nav_bots: "ربات‌ها", nav_services: "خدمات ما", nav_about: "درباره ما", btn_contact: "ارتباط با ما", hero_title_1: "با", hero_title_2: "به آینده سفر کنید", hero_desc: "تیم برنامه‌نویسی SK Team با طراحی ربات‌های هوشمند و سایت‌های اختصاصی، به رشد و رونق کسب و کار شما سرعت می‌بخشد.", btn_view_bots: "مشاهده ربات‌ها", trust_1_title: "تحویل آنی", trust_1_desc: "ربات‌ها بلافاصله پس از خرید فعال می‌شوند.", trust_2_title: "امنیت بالا", trust_2_desc: "محافظت کامل از گروه و اکانت شما.", trust_3_title: "پشتیبانی ۲۴/۷", trust_3_desc: "تیم ما همیشه آماده پاسخگویی به شماست.", section_bots_title: "ربات‌های هوشمند SK Team", section_bots_desc: "روی هر ربات کلیک کنید تا توضیحات کامل آن را ببینید.", section_services_title: "خدمات تخصصی ما", section_services_desc: "برای مشاهده جزئیات هر خدمت، روی آن کلیک کنید.", srv_1_title: "ربات‌های پیام‌رسان", srv_1_desc: "طراحی و ساخت ربات برای تلگرام، ایتا، بله و روبیکا بر اساس نیاز شما.", srv_2_title: "طراحی وب‌سایت", srv_2_desc: "طراحی انواع سایت شرکتی، فروشگاهی و شخصی با بالاترین کیفیت.", srv_3_title: "مدیریت شبکه‌های مجازی", srv_3_desc: "مدیریت و رونق کسب و کار شما با ربات‌های منشی و پاسخگوی خودکار.", section_about_title: "درباره SK Team", section_about_desc: "تیم SK Team متشکل از برنامه‌نویسان متخصص و خلاق است که با هدف رونق کسب و کارها در فضای مجازی شکل گرفته است. ما با طراحی ربات‌های هوشمند و اتوماسیون‌های پیشرفته، ابزارهای لازم برای رشد و مدیریت آسان‌تر شبکه‌های اجتماعی شما را فراهم می‌کنیم. تخصص ما ساخت ربات‌های سفارشی و اختصاصی برای شماست.", footer_rights: "تمامی حقوق مادی و معنوی این سایت متعلق به SK Team می‌باشد. © 2024", footer_contact_title: "ارتباط با ما", btn_support: "پشتیبانی", btn_channel: "کانال", btn_email: "ایمیل", btn_vcard: "کارت ویزیت", btn_instagram: "اینستاگرام", btn_back: "بازگشت به صفحه اصلی", btn_buy_telegram: "مشاهده قیمت و خرید در تلگرام", section_features: "امکانات و قابلیت‌ها", btn_order_telegram: "ثبت سفارش و مشاوره در تلگرام", qr_modal_title: "کارت ویزیت دیجیتال", qr_modal_desc: "برای دریافت اطلاعات تماس و کارت ویزیت ما، این بارکد را با دوربین گوشی خود اسکن کنید.",
+            fa: { nav_home: "خانه", nav_bots: "ربات‌ها", nav_services: "خدمات ما", nav_about: "درباره ما", btn_contact: "ارتباط با ما", hero_title_1: "با", hero_title_2: "به آینده سفر کنید", hero_desc: "تیم SK Team با طراحی ربات‌های هوشمند و سایت‌های اختصاصی، به رشد و رونق کسب و کار شما سرعت می‌بخشد.", btn_view_bots: "مشاهده ربات‌ها", trust_1_title: "تحویل آنی", trust_1_desc: "ربات‌ها بلافاصله پس از خرید فعال می‌شوند.", trust_2_title: "امنیت بالا", trust_2_desc: "محافظت کامل از گروه و اکانت شما.", trust_3_title: "پشتیبانی ۲۴/۷", trust_3_desc: "تیم ما همیشه آماده پاسخگویی به شماست.", section_bots_title: "ربات‌های هوشمند SK Team", section_bots_desc: "روی هر ربات کلیک کنید تا توضیحات کامل آن را ببینید.", section_services_title: "خدمات تخصصی ما", section_services_desc: "برای مشاهده جزئیات هر خدمت، روی آن کلیک کنید.", srv_1_title: "ربات‌های پیام‌رسان", srv_1_desc: "طراحی و ساخت ربات برای تلگرام، ایتا، بله و روبیکا بر اساس نیاز شما.", srv_2_title: "طراحی وب‌سایت", srv_2_desc: "طراحی انواع سایت شرکتی، فروشگاهی و شخصی با بالاترین کیفیت.", srv_3_title: "مدیریت شبکه‌های مجازی", srv_3_desc: "مدیریت و رونق کسب و کار شما با ربات‌های منشی و پاسخگوی خودکار.", section_about_title: "درباره SK Team", section_about_desc: "تیم SK Team متشکل از برنامه‌نویسان متخصص و خلاق است که با هدف رونق کسب و کارها در فضای مجازی شکل گرفته است. ما با طراحی ربات‌های هوشمند و اتوماسیون‌های پیشرفته، ابزارهای لازم برای رشد و مدیریت آسان‌تر شبکه‌های اجتماعی شما را فراهم می‌کنیم. تخصص ما ساخت ربات‌های سفارشی و اختصاصی برای شماست.", footer_rights: "تمامی حقوق مادی و معنوی این سایت متعلق به SK Team می‌باشد. © 2024", footer_contact_title: "ارتباط با ما", btn_support: "پشتیبانی", btn_channel: "کانال", btn_email: "ایمیل", btn_vcard: "کارت ویزیت", btn_instagram: "اینستاگرام", btn_back: "بازگشت به صفحه اصلی", btn_buy_telegram: "مشاهده قیمت و خرید در تلگرام", section_features: "امکانات و قابلیت‌ها", btn_order_telegram: "ثبت سفارش و مشاوره در تلگرام", qr_modal_title: "کارت ویزیت دیجیتال", qr_modal_desc: "برای دریافت اطلاعات تماس و کارت ویزیت ما، این بارکد را با دوربین گوشی خود اسکن کنید.",
                 bots: {
                     'music-player': { title: 'ربات موزیک پلیر', shortDesc: 'پخش و دانلود آنلاین موزیک با کیفیت ۳۲۰، همراه با ۴۰ اسکین اختصاصی و اکولایزرهای حرفه‌ای.', features: ['🎧 پخش و دانلود: پخش آنلاین و قابلیت دانلود فایل‌ها با کیفیت عالی ۳۲۰ کیلوبیت بر ثانیه.', '🌐 پشتیبانی از سایت‌های معروف: دریافت و پخش مستقیم از یوتیوب، ساندکلود و چندین پلتفرم دیگر.', '🎨 شخصی‌سازی کامل (۴۰+ اسکین): بیش از ۴۰ قالب ظاهری (اسکین) که مالک گروه می‌تواند تغییر دهد.', '🎛 اکولایزر حرفه‌ای (۲۰+ حالت): نزدیک به ۲۰ حالت اکولایزر و قابلیت تنظیم سرعت پخش موزیک.', '📂 آرشیو هوشمند: آرشیو کامل و منظم تمامی فایل‌های پخش شده برای دسترسی آسان.'] },
                     'video-player': { title: 'ربات ویدیو پلیر', shortDesc: 'پخش آنلاین شبکه‌های تلویزیونی، ماهواره‌ای و فایل‌های تصویری به صورت مستقیم در گروه.', features: ['📺 پخش زنده تلویزیون: پخش آنلاین شبکه‌های ماهواره‌ای و داخلی.', '🎬 پخش فایل‌های ویدیویی: پخش ویدیوهای ارسالی در گروه با بالاترین کیفیت.', '🚀 سرعت بالا: استریم بدون لگ و روان برای گروه‌های پرجمعیت.'] },
@@ -356,51 +343,142 @@
             }
         };
 
-        // ================= MATRIX CLOCK =================
-        function updateClock() {
-            const now = new Date();
-            const h = String(now.getHours()).padStart(2, '0');
-            const m = String(now.getMinutes()).padStart(2, '0');
-            const s = String(now.getSeconds()).padStart(2, '0');
+        // ================= NIXIE CLOCK (DOT MATRIX) =================
+        const clockCanvas = document.getElementById('clock-canvas');
+        const clockCtx = clockCanvas.getContext('2d');
+        
+        // 5x5 dot matrix patterns for digits 0-9 and colon
+        const digitMatrix = {
+            '0': ["01110", "10001", "10001", "10001", "01110"],
+            '1': ["00100", "01100", "00100", "00100", "01110"],
+            '2': ["01110", "10001", "00110", "01000", "11111"],
+            '3': ["01110", "10001", "00110", "10001", "01110"],
+            '4': ["00010", "00110", "01010", "11111", "00010"],
+            '5': ["11111", "10000", "11110", "00001", "11110"],
+            '6': ["01110", "10000", "11110", "10001", "01110"],
+            '7': ["11111", "00001", "00010", "00100", "01000"],
+            '8': ["01110", "10001", "01110", "10001", "01110"],
+            '9': ["01110", "10001", "01111", "00001", "01110"],
+            ':': ["00000", "00100", "00000", "00100", "00000"]
+        };
 
-            const hEl = document.getElementById('clock-h');
-            const mEl = document.getElementById('clock-m');
-            const sEl = document.getElementById('clock-s');
-
-            // Matrix fall effect
-            if(sEl.innerText !== s) {
-                sEl.classList.add('falling');
-                setTimeout(() => {
-                    sEl.innerText = s;
-                    sEl.classList.remove('falling');
-                }, 300);
+        let clockParticles = [];
+        let lastTimeStr = "";
+        
+        // Initialize clock particles
+        function initClock() {
+            clockParticles = [];
+            for (let i = 0; i < 8; i++) { // 6 digits + 2 colons
+                clockParticles.push({ dots: [], targetPattern: null });
             }
-            if(mEl.innerText !== m) {
-                mEl.classList.add('falling');
-                setTimeout(() => {
-                    mEl.innerText = m;
-                    mEl.classList.remove('falling');
-                }, 300);
-            }
-            if(hEl.innerText !== h) {
-                hEl.classList.add('falling');
-                setTimeout(() => {
-                    hEl.innerText = h;
-                    hEl.classList.remove('falling');
-                }, 300);
-            }
-
-            // Footer Date
-            let currentLang = localStorage.getItem('skteam_lang') || 'fa';
-            let locale = 'fa-IR';
-            if(currentLang === 'en') locale = 'en-US';
-            if(currentLang === 'ar') locale = 'ar-EG';
-            if(currentLang === 'ru') locale = 'ru-RU';
-            if(currentLang === 'tr') locale = 'tr-TR';
-            document.getElementById('live-date-footer').innerText = now.toLocaleDateString(locale, { year: 'numeric', month: 'long', day: 'numeric' });
         }
-        setInterval(updateClock, 1000);
-        updateClock();
+
+        function drawClockTube(x, y, w, h) {
+            clockCtx.fillStyle = 'rgba(10, 12, 16, 0.8)';
+            clockCtx.strokeStyle = '#3b82f6';
+            clockCtx.lineWidth = 1;
+            clockCtx.beginPath();
+            clockCtx.roundRect(x, y, w, h, 5);
+            clockCtx.fill();
+            clockCtx.stroke();
+            
+            // Subtle inner glow
+            clockCtx.fillStyle = 'rgba(59, 130, 246, 0.05)';
+            clockCtx.beginPath();
+            clockCtx.roundRect(x+1, y+1, w-2, h-2, 4);
+            clockCtx.fill();
+        }
+
+        function updateClockAnim() {
+            const now = new Date();
+            const timeStr = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0') + ':' + String(now.getSeconds()).padStart(2, '0');
+            
+            if (timeStr !== lastTimeStr) {
+                for (let i = 0; i < 8; i++) {
+                    const char = timeStr[i];
+                    const pattern = digitMatrix[char];
+                    
+                    // Add falling particles for old dots
+                    clockParticles[i].dots.forEach(dot => {
+                        dot.vy = Math.random() * 2 + 1; // Start falling
+                    });
+                    
+                    // Spawn new dots from top
+                    const newDots = [];
+                    for (let r = 0; r < 5; r++) {
+                        for (let c = 0; c < 5; c++) {
+                            if (pattern[r][c] === '1') {
+                                newDots.push({
+                                    targetX: c * 3, 
+                                    targetY: r * 6,
+                                    x: c * 3,
+                                    y: -20 - Math.random() * 20,
+                                    vy: 2 + Math.random() * 2
+                                });
+                            }
+                        }
+                    }
+                    clockParticles[i].dots = clockParticles[i].dots.concat(newDots);
+                }
+                lastTimeStr = timeStr;
+            }
+
+            clockCtx.clearRect(0, 0, clockCanvas.width, clockCanvas.height);
+            
+            const tubeW = 18;
+            const tubeH = 32;
+            const gap = 4;
+            let startX = 5;
+            const startY = 4;
+
+            // Draw 6 tubes
+            for(let i=0; i<6; i++) {
+                drawClockTube(startX + i * (tubeW + gap), startY, tubeW, tubeH);
+            }
+            // Draw 2 colons
+            drawClockTube(startX + 2 * (tubeW + gap) - 2, startY + 6, 4, 20);
+            drawClockTube(startX + 5 * (tubeW + gap) - 2, startY + 6, 4, 20);
+
+            // Draw particles
+            clockCtx.fillStyle = '#60a5fa';
+            clockCtx.shadowBlur = 4;
+            clockCtx.shadowColor = '#3b82f6';
+
+            for (let i = 0; i < 8; i++) {
+                let offsetX = startX + i * (tubeW + gap) + 3;
+                let offsetY = startY + 5;
+                
+                if (i === 2 || i === 5) {
+                    offsetX = startX + i * (tubeW + gap) + 1;
+                    offsetY = startY + 10;
+                }
+
+                const tubeDots = clockParticles[i].dots;
+                for (let j = tubeDots.length - 1; j >= 0; j--) {
+                    const dot = tubeDots[j];
+                    
+                    if (dot.y < dot.targetY) {
+                        dot.y += dot.vy;
+                        if (dot.y > dot.targetY) dot.y = dot.targetY;
+                    } else if (dot.vy > 0) { // Falling off
+                        dot.y += dot.vy;
+                        if (dot.y > tubeH) {
+                            tubeDots.splice(j, 1);
+                            continue;
+                        }
+                    }
+
+                    clockCtx.beginPath();
+                    clockCtx.arc(offsetX + dot.x, offsetY + dot.y, 1.2, 0, Math.PI * 2);
+                    clockCtx.fill();
+                }
+            }
+            requestAnimationFrame(updateClockAnim);
+        }
+        
+        initClock();
+        updateClockAnim();
+
 
         // ================= LANGUAGE & TYPEWRITER =================
         let typewriterInterval;
@@ -645,6 +723,7 @@
         function closeQRModal() { document.getElementById('qr-modal').classList.remove('active'); }
     </script>
 
+    <!-- Knocket Chat Widget Script (Fixed) -->
     <script src="https://trtc.io/knocket-sdk/sdk.js?identifier=f672fb450563b86d8&y=17924411579157" async></script>
 </body>
 </html>

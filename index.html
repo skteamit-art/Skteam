@@ -15,7 +15,29 @@
             top: 0; left: 0; width: 100%; height: 100%;
             z-index: 0;
             pointer-events: none;
-            transition: opacity 1s ease;
+        }
+
+        /* Splash Screen Container */
+        #splash-screen {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: transparent; 
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 2s cubic-bezier(0.25, 1, 0.5, 1); /* Slower transition (2s) */
+            transform-origin: top right; 
+        }
+        
+        #splash-screen.shrink-to-corner {
+            transform: translate(40vw, -40vh) scale(0.15); 
+            opacity: 0;
+        }
+
+        #logo-canvas {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
         }
 
         /* Main Content */
@@ -24,44 +46,9 @@
             z-index: 10;
             opacity: 0;
             visibility: hidden;
-            transition: opacity 1s ease, visibility 1s;
+            transition: opacity 2s ease, visibility 2s;
         }
         #main-content.show { opacity: 1; visibility: visible; }
-
-        /* Splash Overlay (The black curtain) */
-        #splash-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background-color: #000; /* Pure Black */
-            z-index: 9999;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            transition: opacity 1s ease;
-        }
-
-        /* Splash Logo */
-        #splash-logo {
-            width: 0px; 
-            height: 0px;
-            opacity: 0;
-            object-fit: contain;
-            filter: drop-shadow(0 0 30px rgba(59,130,246,0.8));
-            transition: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Bouncy ease */
-        }
-        #splash-logo.zoom-in {
-            width: 250px;
-            height: 250px;
-            opacity: 1;
-        }
-        #splash-logo.shrink-to-header {
-            position: absolute;
-            top: 10px;
-            right: 20px;
-            width: 50px;
-            height: 50px;
-            opacity: 0; /* Fades out as it hits the header */
-        }
 
         /* Neon & Animation Effects */
         .neon-text { text-shadow: 0 0 10px rgba(59,130,246,0.5); }
@@ -84,12 +71,12 @@
 </head>
 <body class="min-h-screen flex flex-col relative">
 
-    <!-- Matrix Canvas Background -->
+    <!-- Background Matrix Canvas -->
     <canvas id="matrix-canvas"></canvas>
 
-    <!-- Splash Screen -->
-    <div id="splash-overlay">
-        <img id="splash-logo" src="skteam_ring_transparent.png" alt="SK Team Loading">
+    <!-- Splash Screen with Particle Morphing -->
+    <div id="splash-screen">
+        <canvas id="logo-canvas"></canvas>
     </div>
 
     <!-- Main Website Content -->
@@ -261,7 +248,6 @@
     </div>
 
     <!-- ================= MODALS ================= -->
-    <!-- Services Modal -->
     <div id="service-modal" class="modal">
         <div class="modal-content text-right dir-rtl">
             <div class="flex justify-between items-center mb-6 border-b border-gray-700 pb-4">
@@ -275,7 +261,6 @@
         </div>
     </div>
 
-    <!-- QR Modal -->
     <div id="qr-modal" class="modal">
         <div class="modal-content text-center dir-rtl">
             <div class="flex justify-between items-center mb-6 border-b border-gray-700 pb-4">
@@ -289,95 +274,160 @@
         </div>
     </div>
 
-    <!-- JavaScript -->
     <script>
-        // ================= MATRIX BACKGROUND & SPLASH ANIMATION =================
-        const canvas = document.getElementById('matrix-canvas');
-        const ctx = canvas.getContext('2d');
-        
-        // Set canvas size
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
+        // ================= BACKGROUND MATRIX RAIN =================
+        const bgCanvas = document.getElementById('matrix-canvas');
+        const bgCtx = bgCanvas.getContext('2d');
+        bgCanvas.width = window.innerWidth;
+        bgCanvas.height = window.innerHeight;
 
-        const letters = '01';
-        const fontSize = 16;
-        const columns = canvas.width / fontSize;
-        const drops = [];
-        // Initialize drops with random speeds to create the "dripping" effect
-        for (let x = 0; x < columns; x++) {
-            drops[x] = {
-                y: Math.random() * -100, // Start off-screen
-                speed: Math.random() * 0.5 + 0.5 // Base speed
-            };
+        const bgLetters = '01';
+        const bgFontSize = 16;
+        const bgColumns = bgCanvas.width / bgFontSize;
+        const bgDrops = [];
+        for (let x = 0; x < bgColumns; x++) {
+            bgDrops[x] = { y: Math.random() * -100, speed: Math.random() * 0.3 + 0.2 }; // Slower base speed
         }
 
-        let isSplashPhase = true; // Controls the intensity of the rain
-
-        function drawMatrix() {
-            // Fade effect
-            ctx.fillStyle = isSplashPhase ? 'rgba(0, 0, 0, 0.1)' : 'rgba(10, 12, 16, 0.1)';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
+        function drawBgMatrix() {
+            bgCtx.fillStyle = 'rgba(10, 12, 16, 0.1)';
+            bgCtx.fillRect(0, 0, bgCanvas.width, bgCanvas.height);
+            bgCtx.fillStyle = '#3b82f6'; 
+            bgCtx.font = bgFontSize + 'px monospace';
             
-            ctx.fillStyle = isSplashPhase ? '#3b82f6' : '#3b82f6'; // Neon Blue
-            ctx.font = fontSize + 'px monospace';
-            
-            for (let i = 0; i < drops.length; i++) {
-                const text = letters.charAt(Math.floor(Math.random() * letters.length));
-                ctx.fillText(text, i * fontSize, drops[i].y * fontSize);
+            for (let i = 0; i < bgDrops.length; i++) {
+                const text = bgLetters.charAt(Math.floor(Math.random() * bgLetters.length));
+                bgCtx.fillText(text, i * bgFontSize, bgDrops[i].y * bgFontSize);
                 
-                // Randomly make a drop fall faster (Droplet effect)
-                let currentSpeed = drops[i].speed;
-                if (Math.random() > 0.98) {
-                    currentSpeed += 2; // Speeds up like a dripping water
-                }
+                let currentSpeed = bgDrops[i].speed;
+                if (Math.random() > 0.99) currentSpeed += 1.5; // Slower droplet effect
 
-                drops[i].y += currentSpeed;
+                bgDrops[i].y += currentSpeed;
                 
-                // Reset drop to top randomly
-                if (drops[i].y * fontSize > canvas.height && Math.random() > 0.975) {
-                    drops[i].y = 0;
-                    drops[i].speed = Math.random() * 0.5 + 0.5; // Reset speed
+                if (bgDrops[i].y * bgFontSize > bgCanvas.height && Math.random() > 0.98) {
+                    bgDrops[i].y = 0;
+                    bgDrops[i].speed = Math.random() * 0.3 + 0.2; 
                 }
             }
         }
-        
-        // Animation Loop
-        const matrixInterval = setInterval(drawMatrix, 50);
+        setInterval(drawBgMatrix, 50);
 
-        window.addEventListener('resize', () => {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
+        // ================= SPLASH LOGO PARTICLE MORPHING =================
+        const logoCanvas = document.getElementById('logo-canvas');
+        const logoCtx = logoCanvas.getContext('2d');
+        logoCanvas.width = window.innerWidth;
+        logoCanvas.height = window.innerHeight;
+
+        let particles = [];
+        let targets = [];
+        let phase = 'rain'; 
+
+        const img = new Image();
+        img.src = 'skteam_ring_transparent.png'; 
+        img.onload = () => {
+            const offCanvas = document.createElement('canvas');
+            const offCtx = offCanvas.getContext('2d');
+            
+            const scale = Math.min(logoCanvas.width, logoCanvas.height) * 0.5 / img.width; 
+            const imgWidth = img.width * scale;
+            const imgHeight = img.height * scale;
+            offCanvas.width = imgWidth;
+            offCanvas.height = imgHeight;
+            
+            offCtx.drawImage(img, 0, 0, imgWidth, imgHeight);
+            const imageData = offCtx.getImageData(0, 0, imgWidth, imgHeight).data;
+            
+            const offsetX = (logoCanvas.width - imgWidth) / 2;
+            const offsetY = (logoCanvas.height - imgHeight) / 2;
+
+            const step = 4; 
+            for (let y = 0; y < imgHeight; y += step) {
+                for (let x = 0; x < imgWidth; x += step) {
+                    const alpha = imageData[(y * imgWidth + x) * 4 + 3];
+                    if (alpha > 128) { 
+                        targets.push({ x: x + offsetX, y: y + offsetY });
+                    }
+                }
+            }
+            
+            const particlesCount = targets.length;
+            for (let i = 0; i < particlesCount; i++) {
+                particles.push({
+                    x: Math.random() * logoCanvas.width, 
+                    y: Math.random() * -logoCanvas.height, 
+                    targetX: targets[i].x,
+                    targetY: targets[i].y,
+                    speed: Math.random() * 1.5 + 1, // Slower fall speed
+                    char: bgLetters.charAt(Math.floor(Math.random() * bgLetters.length))
+                });
+            }
+            animateLogo();
+        };
+
+        function animateLogo() {
+            if (!logoCtx) return;
+            logoCtx.clearRect(0, 0, logoCanvas.width, logoCanvas.height);
+            
+            logoCtx.shadowBlur = 10;
+            logoCtx.shadowColor = '#3b82f6';
+            logoCtx.fillStyle = '#60a5fa'; 
+            logoCtx.font = '12px monospace';
+
+            particles.forEach((p, i) => {
+                if (phase === 'rain') {
+                    p.y += p.speed;
+                    if (p.y > logoCanvas.height) p.y = -20;
+                } else if (phase === 'morph') {
+                    // Slower morphing factor (0.015 instead of 0.05) for a more cinematic movement
+                    p.x += (p.targetX - p.x) * 0.015;
+                    p.y += (p.targetY - p.y) * 0.015;
+                } else if (phase === 'hold') {
+                    p.x = p.targetX + (Math.random() - 0.5) * 2;
+                    p.y = p.targetY + (Math.random() - 0.5) * 2;
+                }
+                logoCtx.fillText(p.char, p.x, p.y);
+            });
+
+            requestAnimationFrame(animateLogo);
+        }
+
+        // ================= 10-SECOND TIMELINE =================
+        window.addEventListener('DOMContentLoaded', () => {
+            const splashScreen = document.getElementById('splash-screen');
+            const mainContent = document.getElementById('main-content');
+            const homeView = document.getElementById('home-view');
+
+            // t=0s: Rain starts immediately.
+
+            // t=4s: Start Morphing to Logo shape (Takes time due to slower easing)
+            setTimeout(() => {
+                phase = 'morph';
+            }, 4000);
+
+            // t=7.5s: Lock particles into Logo shape
+            setTimeout(() => {
+                phase = 'hold';
+            }, 7500);
+
+            // t=9s: Shrink logo to corner and show main site
+            setTimeout(() => {
+                splashScreen.classList.add('shrink-to-corner');
+                mainContent.classList.add('show');
+                homeView.classList.remove('hide');
+                
+                // Remove splash screen completely after 2s transition
+                setTimeout(() => {
+                    splashScreen.style.display = 'none';
+                }, 2000);
+
+            }, 9000); // At 9 seconds, start moving to corner (takes 2s to finish, totaling 11s of animation)
         });
 
-        // ================= SPLASH SCREEN LOGIC =================
-        window.addEventListener('DOMContentLoaded', () => {
-            const splashOverlay = document.getElementById('splash-overlay');
-            const splashLogo = document.getElementById('splash-logo');
-            const mainContent = document.getElementById('main-content');
-
-            // 1. Wait 1 second, then Zoom In the Logo
-            setTimeout(() => {
-                splashLogo.classList.add('zoom-in');
-            }, 1000);
-
-            // 2. Wait 2 seconds, then Shrink Logo and move to corner
-            setTimeout(() => {
-                splashLogo.classList.remove('zoom-in');
-                splashLogo.classList.add('shrink-to-header');
-            }, 2500);
-
-            // 3. Wait 3 seconds, fade out the black overlay and show content
-            setTimeout(() => {
-                isSplashPhase = false; // Make matrix background blend into site
-                splashOverlay.style.opacity = '0';
-                mainContent.classList.add('show');
-                
-                // Remove overlay from DOM after fade
-                setTimeout(() => {
-                    splashOverlay.style.display = 'none';
-                    document.getElementById('home-view').classList.remove('hide');
-                }, 1000);
-            }, 3000);
+        window.addEventListener('resize', () => {
+            bgCanvas.width = window.innerWidth;
+            bgCanvas.height = window.innerHeight;
+            logoCanvas.width = window.innerWidth;
+            logoCanvas.height = window.innerHeight;
         });
 
         // ================= SERVICE MODALS =================
@@ -392,7 +442,6 @@
                         <li>ربات‌های مدیریت گروه و کانال</li>
                         <li>ربات‌های سرگرمی و بازی</li>
                     </ul>
-                    <p class="mt-3">ربات‌ها بر اساس نیاز دقیق شما شخصی‌سازی می‌شوند و بهینه‌ترین عملکرد را دارند.</p>
                 `
             },
             'web': {
@@ -432,7 +481,6 @@
             document.getElementById('service-modal').classList.remove('active');
         }
 
-        // QR Modal Logic
         function openQRModal() {
             document.getElementById('qr-modal').classList.add('active');
         }

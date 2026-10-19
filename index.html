@@ -9,8 +9,8 @@
     <style>
         body { font-family: Vazir, sans-serif; background-color: #0a0c10; color: white; overflow-x: hidden; margin: 0; }
         
-        /* Background Matrix (Slow) */
-        #bg-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; opacity: 0.3; }
+        /* Background Matrix (Clearer & Crisper) */
+        #bg-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; opacity: 0.6; }
 
         /* Splash Screen Container - Flexbox perfectly centers children */
         #splash-screen { 
@@ -32,9 +32,9 @@
         /* Center Particles Canvas - Fills container */
         #center-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; }
 
-        /* The Actual Logo Image - Sits inside flexbox, perfectly centered */
+        /* The Actual Logo Image */
         #main-splash-logo {
-            position: relative; /* Not absolute, lets flexbox handle centering */
+            position: relative;
             width: 150px;
             height: 150px;
             object-fit: contain;
@@ -286,6 +286,11 @@
         </footer>
     </div>
 
+    <!-- Floating Custom Support Button (Fallback if Knocket fails) -->
+    <a href="https://t.me/Siavashska" target="_blank" class="fixed bottom-6 right-6 bg-[#2AABEE] hover:bg-[#229ED9] text-white p-4 rounded-full shadow-[0_0_20px_rgba(42,171,238,0.6)] z-[9999] transition-transform hover:scale-110 flex items-center justify-center group" title="پشتیبانی تلگرام">
+        <svg class="w-8 h-8 group-hover:animate-pulse" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+    </a>
+
     <!-- Modals -->
     <div id="service-modal" class="modal">
         <div class="modal-content text-right dir-rtl">
@@ -343,7 +348,7 @@
             menu.classList.toggle('hidden');
         }
 
-        // Background Matrix
+        // Background Matrix (Crisp and Clear)
         const bgCanvas = document.getElementById('bg-canvas');
         const bgCtx = bgCanvas.getContext('2d');
         bgCanvas.width = window.innerWidth;
@@ -356,10 +361,12 @@
             bgDrops[x] = { y: Math.random() * -100, speed: Math.random() * 0.2 + 0.1 };
         }
         function drawBgMatrix() {
-            bgCtx.fillStyle = 'rgba(10, 12, 16, 0.1)';
+            bgCtx.fillStyle = 'rgba(10, 12, 16, 0.15)'; 
             bgCtx.fillRect(0, 0, bgCanvas.width, bgCanvas.height);
-            bgCtx.fillStyle = 'rgba(59, 130, 246, 0.3)';
+            
+            bgCtx.fillStyle = '#3b82f6'; // Solid vibrant blue
             bgCtx.font = bgFontSize + 'px monospace';
+            
             for (let i = 0; i < bgDrops.length; i++) {
                 const text = bgLetters.charAt(Math.floor(Math.random() * bgLetters.length));
                 bgCtx.fillText(text, i * bgFontSize, bgDrops[i].y * bgFontSize);
@@ -372,7 +379,7 @@
         }
         setInterval(drawBgMatrix, 50);
 
-        // ================= WATER FILL LOGIC =================
+        // ================= WATER FILL LOGIC (CIRCLE) =================
         const centerCanvas = document.getElementById('center-canvas');
         const centerCtx = centerCanvas.getContext('2d');
         centerCanvas.width = window.innerWidth;
@@ -381,20 +388,16 @@
         const isMobile = window.innerWidth < 768;
         let centerParticles = [];
         
-        // Since we use flexbox to center the logo, the center of the canvas is exactly the center of the screen
         const centerX = centerCanvas.width / 2;
         const centerY = centerCanvas.height / 2;
         
         const targetRadius = isMobile ? 85 : 160; 
         
-        // 1. Generate a solid circle of targets
-        // We use a grid with a step, but remove the offset so they are perfectly aligned
-        const step = isMobile ? 14 : 18; 
+        const step = isMobile ? 11 : 14; 
         let rawTargets = [];
 
         for (let y = -targetRadius; y <= targetRadius; y += step) {
             for (let x = -targetRadius; x <= targetRadius; x += step) {
-                // Check if the point is inside the circle
                 if (x*x + y*y <= targetRadius*targetRadius) {
                     rawTargets.push({ 
                         x: centerX + x, 
@@ -404,22 +407,18 @@
             }
         }
 
-        // 2. Sort targets from BOTTOM to TOP (highest Y value first)
         rawTargets.sort((a, b) => b.y - a.y);
 
-        // 3. Create particles with a staggered start time to simulate water filling
-        const totalFillTime = 3000; // 3 seconds to fill the whole circle
+        const totalFillTime = 3000; 
         rawTargets.forEach((target, index) => {
-            // Bottom particles start immediately (delay = 0). 
-            // Top particles start later (delay = totalFillTime).
             const progress = index / rawTargets.length; 
             const delay = progress * totalFillTime;
 
             centerParticles.push({
                 x: target.x,
                 targetY: target.y,
-                y: -50, // Start above the screen
-                speed: Math.random() * 2 + 4, // Falling speed
+                y: -50, 
+                speed: Math.random() * 2 + 4, 
                 char: bgLetters.charAt(Math.floor(Math.random() * bgLetters.length)),
                 startTime: delay,
                 isSettled: false
@@ -434,21 +433,19 @@
 
             centerCtx.clearRect(0, 0, centerCanvas.width, centerCanvas.height);
             
-            // Increase clarity
-            centerCtx.shadowBlur = 0; // Remove blur for crisp text
+            centerCtx.shadowBlur = 0; 
             centerCtx.fillStyle = '#60a5fa'; 
-            centerCtx.font = 'bold ' + (isMobile ? '16px' : '22px') + ' monospace';
+            centerCtx.font = (isMobile ? '11px' : '14px') + ' monospace'; 
             centerCtx.textAlign = 'center';
             centerCtx.textBaseline = 'middle';
 
             centerParticles.forEach(p => {
-                // Check if it's time for this particle to drop
                 if (elapsedTime > p.startTime) {
                     if (!p.isSettled) {
                         p.y += p.speed;
                         if (p.y >= p.targetY) {
                             p.y = p.targetY;
-                            p.isSettled = true; // Particle has reached the bottom of its column
+                            p.isSettled = true; 
                         }
                     }
                     centerCtx.fillText(p.char, p.x, p.y);
@@ -461,7 +458,6 @@
 
         // Timeline & Initialization
         window.addEventListener('DOMContentLoaded', () => {
-            // Language Init
             let savedLang = 'fa';
             try { savedLang = localStorage.getItem('skteam_lang') || 'fa'; } catch(e) {}
             changeLanguage(savedLang);
@@ -473,12 +469,10 @@
             const mainContent = document.getElementById('main-content');
             const homeView = document.getElementById('home-view');
 
-            // Wait for the water to fill (approx 3 seconds) + 0.5s buffer
             setTimeout(() => {
-                mainLogo.classList.add('show'); // Fade in the actual logo over the filled circle
+                mainLogo.classList.add('show'); 
             }, 3500);
 
-            // Wait for the logo to be fully visible, then shrink to corner
             setTimeout(() => {
                 splashScreen.classList.add('shrink-to-corner');
                 mainContent.classList.add('show');
@@ -568,6 +562,7 @@
         }
     </script>
 
+    <!-- Knocket Chat Widget Script (Exact as provided by user) -->
     <script src="https://trtc.io/knocket-sdk/sdk.js?identifier=f672fb450563b86d8y=17924411579157" async></script>
 
 </body>

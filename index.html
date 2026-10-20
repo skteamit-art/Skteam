@@ -323,7 +323,7 @@
             }
         };
 
-        // ================= MATRIX CLOCK (NIXIE) - FIXED =================
+        // ================= MATRIX CLOCK (NIXIE) - SMART UPDATES =================
         const clockCanvas = document.getElementById('clock-canvas');
         const clockCtx = clockCanvas.getContext('2d');
         clockCanvas.width = 175;
@@ -343,8 +343,13 @@
             ':': ["000", "010", "000", "010", "000"]
         };
 
-        let particles = [];
+        // Array of 8 separate arrays for each digit position
+        let particlesByIndex = Array.from({ length: 8 }, () => []);
         let lastTime = "";
+        
+        // Pre-calculated X positions for the digits and colons
+        const tubeXPositions = [5, 27, null, 65, 87, null, 125, 147];
+        const dotStartXPositions = [11, 33, null, 71, 93, null, 131, 153];
 
         function getDigitPattern(char) {
             if (char >= '0' && char <= '9') return digitMatrix[char];
@@ -355,26 +360,30 @@
             const now = new Date();
             const timeStr = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0') + ':' + String(now.getSeconds()).padStart(2, '0');
 
-            if (timeStr !== lastTime || force) {
-                if (!force) {
-                    particles.forEach(p => p.isFallingOff = true);
-                }
-                
-                let currentX = 5;
-                for (let i = 0; i < 8; i++) {
-                    const isColon = (i === 2 || i === 5);
-                    if (isColon) currentX += 4;
+            if (!force && timeStr === lastTime) return; 
 
-                    const char = timeStr[i];
-                    const pattern = getDigitPattern(char);
-                    
+            for (let i = 0; i < 8; i++) {
+                const newChar = timeStr[i];
+                const oldChar = lastTime ? lastTime[i] : null;
+
+                // Only update if this specific digit changed (or force init)
+                if (force || newChar !== oldChar) {
+                    // 1. Fall off old particles for this index
+                    particlesByIndex[i].forEach(p => p.isFallingOff = true);
+
+                    // 2. Spawn new particles for the new digit
+                    const pattern = getDigitPattern(newChar);
+                    const startX = dotStartXPositions[i];
+                    const isColon = (i === 2 || i === 5);
+                    const startY = isColon ? 14 : 8; // Colons sit lower
+
                     for (let r = 0; r < 5; r++) {
                         for (let c = 0; c < 3; c++) {
                             if (pattern[r][c] === '1') {
-                                particles.push({
-                                    targetX: currentX + 6 + (c * 4),
-                                    targetY: 6 + (r * 6),
-                                    x: currentX + 6 + (c * 4),
+                                particlesByIndex[i].push({
+                                    targetX: startX + (c * 4),
+                                    targetY: startY + (r * 6),
+                                    x: startX + (c * 4),
                                     y: -10 - Math.random() * 20,
                                     vy: 2 + Math.random() * 2,
                                     isFallingOff: false,
@@ -383,12 +392,9 @@
                             }
                         }
                     }
-
-                    if (isColon) currentX += 12;
-                    else currentX += 22;
                 }
-                lastTime = timeStr;
             }
+            lastTime = timeStr;
         }
 
         setInterval(updateTime, 1000);
@@ -396,54 +402,53 @@
         function renderClock() {
             clockCtx.clearRect(0, 0, clockCanvas.width, clockCanvas.height);
 
-            let currentX = 5;
+            // Draw static tubes
             for (let i = 0; i < 8; i++) {
-                const isColon = (i === 2 || i === 5);
-                if (isColon) currentX += 4;
-
-                if (!isColon) {
+                const x = tubeXPositions[i];
+                if (x !== null) {
                     clockCtx.fillStyle = 'rgba(15, 18, 24, 0.9)';
                     clockCtx.strokeStyle = '#3b82f6';
                     clockCtx.lineWidth = 1;
                     clockCtx.beginPath();
-                    clockCtx.roundRect(currentX, 2, 18, 38, 4);
+                    clockCtx.roundRect(x, 2, 18, 38, 4);
                     clockCtx.fill();
                     clockCtx.stroke();
                     
                     clockCtx.fillStyle = 'rgba(59, 130, 246, 0.1)';
                     clockCtx.beginPath();
-                    clockCtx.roundRect(currentX+1, 3, 16, 36, 3);
+                    clockCtx.roundRect(x+1, 3, 16, 36, 3);
                     clockCtx.fill();
                 }
-
-                if (isColon) currentX += 12;
-                else currentX += 22;
             }
 
             clockCtx.fillStyle = '#60a5fa';
             clockCtx.shadowBlur = 4;
             clockCtx.shadowColor = '#3b82f6';
 
-            for (let i = particles.length - 1; i >= 0; i--) {
-                const p = particles[i];
-                
-                if (p.isFallingOff) {
-                    p.fallV += 0.5; 
-                    p.y += p.fallV;
-                    if (p.y > 45) {
-                        particles.splice(i, 1); 
-                        continue;
+            // Draw particles for each digit independently
+            for (let i = 0; i < 8; i++) {
+                const particles = particlesByIndex[i];
+                for (let j = particles.length - 1; j >= 0; j--) {
+                    const p = particles[j];
+                    
+                    if (p.isFallingOff) {
+                        p.fallV += 0.5; 
+                        p.y += p.fallV;
+                        if (p.y > 45) {
+                            particles.splice(j, 1); 
+                            continue;
+                        }
+                    } else {
+                        if (p.y < p.targetY) {
+                            p.y += p.vy;
+                            if (p.y > p.targetY) p.y = p.targetY;
+                        }
                     }
-                } else {
-                    if (p.y < p.targetY) {
-                        p.y += p.vy;
-                        if (p.y > p.targetY) p.y = p.targetY;
-                    }
-                }
 
-                clockCtx.beginPath();
-                clockCtx.arc(p.targetX, p.y, 1.5, 0, Math.PI * 2);
-                clockCtx.fill();
+                    clockCtx.beginPath();
+                    clockCtx.arc(p.targetX, p.y, 1.5, 0, Math.PI * 2);
+                    clockCtx.fill();
+                }
             }
 
             requestAnimationFrame(renderClock);
